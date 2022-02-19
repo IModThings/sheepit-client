@@ -222,26 +222,28 @@ public class Server extends Thread {
 			Response response = this.HTTPRequest(remoteURL, formBody, false);
 			int r = response.code();
 			String contentType = response.body().contentType().toString();
-			
-			if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/xml")) {
-				String in = response.body().string();
-				serverConfig = new Persister().read(ServerConfig.class, in);
-				
-				if (ServerCode.fromInt(serverConfig.getStatus()) != ServerCode.OK) {
-					return Error.ServerCodeToType(ServerCode.fromInt(serverConfig.getStatus()));
-				}
-				
-				publickey = serverConfig.getPublickey();
-				if (publickey.isEmpty()) {
-					publickey = null;
-				}
-				else {
-					this.user_config.setPassword(publickey);
-				}
+
+			if (r != HttpURLConnection.HTTP_OK || contentType.startsWith("text/xml") == false) {
+				return Error.Type.ERROR_BAD_SERVER_RESPONSE;
 			}
 			else if (r == HttpURLConnection.HTTP_NOT_FOUND) {
 				// most likely the server instance is down but not the frontend proxy (traefik)
 				return Error.Type.SERVER_DOWN;
+			}
+
+			String in = response.body().string();
+			serverConfig = new Persister().read(ServerConfig.class, in);
+
+			if (ServerCode.fromInt(serverConfig.getStatus()) != ServerCode.OK) {
+				return Error.ServerCodeToType(ServerCode.fromInt(serverConfig.getStatus()));
+			}
+
+			publickey = serverConfig.getPublickey();
+			if (publickey.isEmpty()) {
+				publickey = null;
+			}
+			else {
+				this.user_config.setPassword(publickey);
 			}
 		}
 		catch (ConnectException e) {
@@ -287,7 +289,8 @@ public class Server extends Thread {
 					HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(this.getPage("speedtest-answer"))).newBuilder();
 					Response response = this.HTTPRequest(urlBuilder, RequestBody.create(MediaType.parse("application/xml"), writer.toString()));
 					if (response.code() != HttpURLConnection.HTTP_OK) {
-						throw new IOException("Server::getConfiguration Speedtest unexpected response");
+						this.log.error("Server::getConfiguration Speedtest unexpected response");
+						return Error.Type.ERROR_BAD_SERVER_RESPONSE;
 					}
 				}
 				catch (final Exception e) {
@@ -339,66 +342,64 @@ public class Server extends Thread {
 			Response response = this.HTTPRequest(urlBuilder, RequestBody.create(this.generateXMLForMD5cache(), MediaType.parse("application/xml")));
 			
 			int r = response.code();
-			String contentType = response.body().contentType().toString();
-			
-			if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/xml")) {
-				String in = response.body().string();
-				
-				JobInfos jobData = new Persister().read(JobInfos.class, in);
-				
-				handleFileMD5DeleteDocument(jobData.getFileMD5s());
-				
-				if (jobData.getSessionStats() != null) {
-					this.client.getGui().displayStats(
-							new Stats(jobData.getSessionStats().getRemainingFrames(), jobData.getSessionStats().getPointsEarnedByUser(),
-									jobData.getSessionStats().getPointsEarnedOnSession(), jobData.getSessionStats().getRenderableProjects(),
-									jobData.getSessionStats().getWaitingProjects(), jobData.getSessionStats().getConnectedMachines()));
-				}
-				
-				ServerCode serverCode = ServerCode.fromInt(jobData.getStatus());
-				if (serverCode != ServerCode.OK) {
-					switch (serverCode) {
-						case JOB_REQUEST_NOJOB:
-							return null;
-						case JOB_REQUEST_ERROR_NO_RENDERING_RIGHT:
-							throw new FermeExceptionNoRightToRender();
-						case JOB_REQUEST_ERROR_DEAD_SESSION:
-							throw new FermeExceptionNoSession();
-						case JOB_REQUEST_ERROR_SESSION_DISABLED:
-							throw new FermeExceptionSessionDisabled();
-						case JOB_REQUEST_ERROR_INTERNAL_ERROR:
-							throw new FermeExceptionBadResponseFromServer();
-						case JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE:
-							throw new FermeExceptionNoRendererAvailable();
-						case JOB_REQUEST_SERVER_IN_MAINTENANCE:
-							throw new FermeExceptionServerInMaintenance();
-						case JOB_REQUEST_SERVER_OVERLOADED:
-							throw new FermeExceptionServerOverloaded();
-						default:
-							throw new FermeException("error requestJob: status is not ok (it's " + serverCode + ")");
-					}
-				}
-				
-				String validationUrl = URLDecoder.decode(jobData.getRenderTask().getValidationUrl(), "UTF-8");
-				
-				return new Job(this.user_config, this.client.getGui(), this.client.getLog(), jobData.getRenderTask().getId(),
-						jobData.getRenderTask().getFrame(), jobData.getRenderTask().getPath().replace("/", File.separator),
-						jobData.getRenderTask().getUseGpu() == 1, jobData.getRenderTask().getRendererInfos().getCommandline(), validationUrl,
-						jobData.getRenderTask().getScript(), jobData.getRenderTask().getArchive_md5(), jobData.getRenderTask().getRendererInfos().getMd5(),
-						jobData.getRenderTask().getName(), jobData.getRenderTask().getPassword(),
-						jobData.getRenderTask().getSynchronous_upload().equals("1"), jobData.getRenderTask().getRendererInfos().getUpdate_method());
+			if (r == HttpURLConnection.HTTP_UNAVAILABLE || r == HttpURLConnection.HTTP_CLIENT_TIMEOUT) {
+				this.log.error("Server::requestJob server unavailable or down: " + response);
+				throw new FermeServerDown();
 			}
-			else {
-				System.out.println("Server::requestJob url " + url_contents + " r " + r + " contentType " + contentType);
-				if (r == HttpURLConnection.HTTP_UNAVAILABLE || r == HttpURLConnection.HTTP_CLIENT_TIMEOUT) {
-					// most likely varnish is up but apache down
-					throw new FermeServerDown();
-				}
-				else if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/html")) {
-					throw new FermeExceptionBadResponseFromServer();
-				}
-				System.out.println(response.body().string());
+			else if(response.body().contentType().toString().startsWith("text/xml") == false) {
+				this.log.error("Server::requestJob bad contentType received: " + response);
+				throw new FermeExceptionBadResponseFromServer();
 			}
+			else if (r != HttpURLConnection.HTTP_OK) {
+				this.log.error("Server::requestJob unexpected response" + response);
+				throw new FermeException();
+			}
+
+			String in = response.body().string();
+
+			JobInfos jobData = new Persister().read(JobInfos.class, in);
+
+			handleFileMD5DeleteDocument(jobData.getFileMD5s());
+
+			if (jobData.getSessionStats() != null) {
+				this.client.getGui().displayStats(
+						new Stats(jobData.getSessionStats().getRemainingFrames(), jobData.getSessionStats().getPointsEarnedByUser(),
+								jobData.getSessionStats().getPointsEarnedOnSession(), jobData.getSessionStats().getRenderableProjects(),
+								jobData.getSessionStats().getWaitingProjects(), jobData.getSessionStats().getConnectedMachines()));
+			}
+
+			ServerCode serverCode = ServerCode.fromInt(jobData.getStatus());
+			if (serverCode != ServerCode.OK) {
+				switch (serverCode) {
+					case JOB_REQUEST_NOJOB:
+						return null;
+					case JOB_REQUEST_ERROR_NO_RENDERING_RIGHT:
+						throw new FermeExceptionNoRightToRender();
+					case JOB_REQUEST_ERROR_DEAD_SESSION:
+						throw new FermeExceptionNoSession();
+					case JOB_REQUEST_ERROR_SESSION_DISABLED:
+						throw new FermeExceptionSessionDisabled();
+					case JOB_REQUEST_ERROR_INTERNAL_ERROR:
+						throw new FermeExceptionBadResponseFromServer();
+					case JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE:
+						throw new FermeExceptionNoRendererAvailable();
+					case JOB_REQUEST_SERVER_IN_MAINTENANCE:
+						throw new FermeExceptionServerInMaintenance();
+					case JOB_REQUEST_SERVER_OVERLOADED:
+						throw new FermeExceptionServerOverloaded();
+					default:
+						throw new FermeException("error requestJob: status is not ok (it's " + serverCode + ")");
+				}
+			}
+
+			String validationUrl = URLDecoder.decode(jobData.getRenderTask().getValidationUrl(), "UTF-8");
+
+			return new Job(this.user_config, this.client.getGui(), this.client.getLog(), jobData.getRenderTask().getId(),
+					jobData.getRenderTask().getFrame(), jobData.getRenderTask().getPath().replace("/", File.separator),
+					jobData.getRenderTask().getUseGpu() == 1, jobData.getRenderTask().getRendererInfos().getCommandline(), validationUrl,
+					jobData.getRenderTask().getScript(), jobData.getRenderTask().getArchive_md5(), jobData.getRenderTask().getRendererInfos().getMd5(),
+					jobData.getRenderTask().getName(), jobData.getRenderTask().getPassword(),
+					jobData.getRenderTask().getSynchronous_upload().equals("1"), jobData.getRenderTask().getRendererInfos().getUpdate_method());
 		}
 		catch (FermeException e) {
 			throw e;
@@ -415,7 +416,6 @@ public class Server extends Thread {
 			e.printStackTrace(pw);
 			throw new FermeException("error requestJob: unknown exception " + e + " stacktrace: " + sw.toString());
 		}
-		throw new FermeException("error requestJob, end of function");
 	}
 	
 	public Response HTTPRequest(String url) throws IOException {
@@ -444,7 +444,7 @@ public class Server extends Thread {
 			response = httpClient.newCall(request).execute();
 			
 			if (!response.isSuccessful()) {
-				throw new IOException("Unexpected code " + response);
+				this.log.error("Received unsuccessful HTTP response " + response);
 			}
 			
 			this.lastRequestTime = new Date().getTime();
