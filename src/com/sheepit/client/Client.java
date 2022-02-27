@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -1007,7 +1008,7 @@ import okhttp3.HttpUrl;
 		
 		return 0;
 	}
-	
+
 	private void copySharedArchive(String existingArchive, String targetArchive) {
 		Path existingArchivePath = Paths.get(existingArchive);
 		Path targetArchivePath = Paths.get(targetArchive);
@@ -1016,7 +1017,10 @@ import okhttp3.HttpUrl;
 				Files.createLink(targetArchivePath, existingArchivePath);
 				log.debug("Created hardlink from " + targetArchivePath + " to " + existingArchivePath);
 			}
-			catch (UnsupportedOperationException x) {
+			catch (UnsupportedOperationException // underlying file system does not support hard-linking
+				| FileSystemException       // cache-dir and shared-zip are on separate file systems, even though hard-linking is supported
+				| SecurityException         // user is not allowed to create hard-links
+				ignore) {
 				// Creating hardlinks might not be supported on some filesystems
 				log.debug("Failed to create hardlink, falling back to copying file to " + targetArchivePath);
 				Files.copy(existingArchivePath, targetArchivePath, StandardCopyOption.REPLACE_EXISTING);
