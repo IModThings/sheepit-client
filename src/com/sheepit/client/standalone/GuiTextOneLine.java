@@ -100,6 +100,8 @@ public class GuiTextOneLine implements Gui {
 			client.run();
 			client.stop();
 		}
+		// stop if there is no client or client has been stopped
+		this.stop();
 	}
 	
 	@Override public void stop() {
