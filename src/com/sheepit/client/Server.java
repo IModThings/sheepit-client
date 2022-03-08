@@ -127,9 +127,6 @@ public class Server extends Thread {
 						Job job = this.client.getRenderingJob();
 						
 						urlBuilder.addQueryParameter("frame", job.getFrameNumber()).addQueryParameter("job", job.getId());
-						if (job.getExtras() != null && !job.getExtras().isEmpty()) {
-							urlBuilder.addQueryParameter("extras", job.getExtras());
-						}
 						
 						RenderProcess process = job.getProcessRender();
 						if (process != null) {
@@ -381,7 +378,7 @@ public class Server extends Thread {
 						jobData.getRenderTask().getFrame(), jobData.getRenderTask().getPath().replace("/", File.separator),
 						jobData.getRenderTask().getUseGpu() == 1, jobData.getRenderTask().getRendererInfos().getCommandline(), validationUrl,
 						jobData.getRenderTask().getScript(), jobData.getRenderTask().getArchive_md5(), jobData.getRenderTask().getRendererInfos().getMd5(),
-						jobData.getRenderTask().getName(), jobData.getRenderTask().getPassword(), jobData.getRenderTask().getExtras(),
+						jobData.getRenderTask().getName(), jobData.getRenderTask().getPassword(),
 						jobData.getRenderTask().getSynchronous_upload().equals("1"), jobData.getRenderTask().getRendererInfos().getUpdate_method());
 			}
 			else {

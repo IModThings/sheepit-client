@@ -68,7 +68,6 @@ import java.util.regex.Pattern;
 	private boolean useGPU;
 	private String name;
 	private char[] password;
-	private String extras;
 	private String updateRenderingStatusMethod;
 	private String blenderShortVersion;
 	private String blenderLongVersion;
@@ -82,7 +81,7 @@ import java.util.regex.Pattern;
 	private Log log;
 	
 	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String validationUrl_,
-			String script_, String sceneMd5_, String rendererMd5_, String name_, char[] password_, String extras_, boolean synchronous_upload_,
+			String script_, String sceneMd5_, String rendererMd5_, String name_, char[] password_, boolean synchronous_upload_,
 			String update_method_) {
 		configuration = config_;
 		id = id_;
@@ -95,7 +94,6 @@ import java.util.regex.Pattern;
 		rendererMD5 = rendererMd5_;
 		name = name_;
 		password = password_;
-		extras = extras_;
 		synchronousUpload = synchronous_upload_;
 		gui = gui_;
 		outputImagePath = null;
@@ -126,8 +124,8 @@ import java.util.regex.Pattern;
 	
 	public String toString() {
 		return String
-				.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)",
-						frameNumber, sceneMD5, rendererMD5, id, outputImagePath, path, useGPU, name, extras, updateRenderingStatusMethod, render);
+				.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' updateRenderingStatusMethod '%s' render %s)",
+						frameNumber, sceneMD5, rendererMD5, id, outputImagePath, path, useGPU, name, updateRenderingStatusMethod, render);
 	}
 	
 	public String getPrefixOutputImage() {

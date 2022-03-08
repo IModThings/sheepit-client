@@ -126,7 +126,7 @@ Answer with no error:
 <?xml version="1.0" encoding="utf-8" ?>
 <jobrequest status="0">
 	<stats credits_session="0" credits_total="6318899" frame_remaining="36830" waiting_project="42" connected_machine="773" renderable_project="0" />
-	<job id="1" use_gpu="1" archive_md5="db26b54689516484633b7d4855fb1567" path="compute-method.blend" frame="0340" synchronous_upload="1" extras="" validation_url="https%3A%2F%2Fsheepit-renderfarm.com%2Fserver%2Fsend_frame.php%3Fjob%3D1%26frame%3D0340%26extras%3D" name="human readable name" password="some password">
+	<job id="1" use_gpu="1" archive_md5="db26b54689516484633b7d4855fb1567" path="compute-method.blend" frame="0340" synchronous_upload="1" validation_url="https%3A%2F%2Fsheepit-renderfarm.com%2Fserver%2Fsend_frame.php%3Fjob%3D1%26frame%3D0340" name="human readable name" password="some password">
 		<renderer md5="05234503229a4660e428e8d227746d8d" commandline=".e --factory-startup --disable-autoexec -noaudio -b .c --engine CYCLES -o .o -f .f -x 1" update_method="remainingtime"/>
 		<script>
 			<!-- a server generated python script configuring the render with the right settings for the farm -->
@@ -150,7 +150,6 @@ job => an element containing information about the new job
 		* path => The path to the blend file within the archive
 		* frame => The frame number to be rendered
 		* synchronous_upload => A flag indicating whether the job result can be queued up for uploading (0) or should be sent back immediately (1, only for the test frames)
-		* extras => Additional information, like whether the frame is a tile
 		* validation_url => The URL to send the job validation to
 		* name => The project name that will be displayed in the ui
 		* password => The archive password
@@ -170,7 +169,6 @@ Parameter as GET or POST:
     * job: Job ID
     * frame: Job's frame number
     * rendertime: Job's render time
-    * extras: Job's extra data
     * file: Frame to validate as form-data post
     * memoryused (optional): Max memory used for the render
     * cores (optional): Number of cores used from the render
@@ -195,7 +193,6 @@ Url: use the request type "keepmealive" from the configuration answer.
 Parameter as GET or POST:
     * job: ID of the rendering job
     * frame: Frame number of the rendering job
-    * extras: Extras data get on job request of the rendering job
     * rendertime: current render time (optional)
     * remainingtime: current remaining time to render the frame (optional)
 
@@ -242,7 +239,6 @@ Parameter as GET or POST:
 			* 99 => Unknown error
     * job: job ID
     * frame: job's frame number
-    * extras: job's extra data
     * render_time (optional): job's frame number
     * memoryused (optional): max memory used for the render (in kilo bytes)
 Parameter as form-urlencoded:
