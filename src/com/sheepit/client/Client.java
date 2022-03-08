@@ -661,9 +661,6 @@ import okhttp3.HttpUrl;
 				remoteURL.addQueryParameter("job", job_to_reset_.getId());
 				remoteURL.addQueryParameter("render_time", Integer.toString(job_to_reset_.getProcessRender().getDuration()));
 				remoteURL.addQueryParameter("memoryused", Long.toString(job_to_reset_.getProcessRender().getPeakMemoryUsed()));
-				if (job_to_reset_.getExtras() != null && job_to_reset_.getExtras().isEmpty() == false) {
-					remoteURL.addQueryParameter("extras", job_to_reset_.getExtras());
-				}
 			}
 			this.server.HTTPSendFile(remoteURL.build().toString(), temp_file.getAbsolutePath(), step_, this.gui);
 			temp_file.delete();

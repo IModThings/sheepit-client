@@ -20,8 +20,6 @@ import org.simpleframework.xml.Root;
 	
 	@Attribute(name = "synchronous_upload") @Getter private String synchronous_upload;
 	
-	@Attribute(name = "extras") @Getter private String extras;
-	
 	@Attribute(name = "validation_url") @Getter private String validationUrl;
 	
 	@Attribute(name = "name") @Getter private String name;
