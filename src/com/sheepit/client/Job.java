@@ -818,6 +818,21 @@ import java.util.regex.Pattern;
 		else if (line.contains("Warning: Cycles is not enabled!")) {
 			return Error.Type.ENGINE_NOT_AVAILABLE;
 		}
+		else if (line.contains("OpenImageDenoise error: SSE4.1 support is required at minimum")) {
+			// denoising capability detection
+			// Fra:201 Mem:8.89M (Peak 10.09M) | Time:00:00.04 | Mem:0.27M, Peak:0.27M | Scene, View Layer | Updating Device | Writing constant memory
+			// Fra:201 Mem:8.89M (Peak 10.09M) | Time:00:00.04 | Mem:0.27M, Peak:0.27M | Scene, View Layer | Loading denoising kernels (may take a few minutes the first time)
+			// Fra:201 Mem:8.89M (Peak 10.09M) | Time:00:00.04 | Mem:0.27M, Peak:0.27M | Scene, View Layer | Sample 0/16
+			// Fra:201 Mem:127.55M (Peak 127.55M) | Time:00:00.65 | Remaining:00:09.13 | Mem:118.92M, Peak:118.92M | Scene, View Layer | Sample 1/16
+			// E0308 1719 31449 denoiser_oidn.cpp:197] OpenImageDenoise error: SSE4.1 support is required at minimum
+			// Fra:201 Mem:198.74M (Peak 301.58M) | Time:00:08.74 | Mem:118.92M, Peak:118.92M | Scene, View Layer | Sample 16/16
+			// Rendering done
+			// Fra:201 Mem:198.74M (Peak 301.58M) | Time:00:08.74 | Mem:118.92M, Peak:118.92M | Scene, View Layer | Finished
+			// Saved: '/tmp/5/sheepit/1541_0201.png'
+			// Time: 00:09.30 (Saving: 00:00.55)
+			// Blender quit
+			return Error.Type.CPU_NOT_SUPPORTED;
+		}
 		return Type.OK;
 	}
 	
