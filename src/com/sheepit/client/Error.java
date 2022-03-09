@@ -151,7 +151,7 @@ public class Error {
 	public static String humanString(Type in) {
 		switch (in) {
 			case ERROR_BAD_RESPONSE:
-				return "Corrupt response from server when trying to upload data. The server might be overloaded or encountering other issues. Will try again in a few minutes.";
+				return "Corrupt response from the server when trying to upload data. The server might be overloaded or be encountering other issues. Will try again in a few minutes.";
 			case NETWORK_ISSUE:
 				return "Could not connect to the server, please check your connection to the internet.";
 			case TOO_OLD_CLIENT:
@@ -159,15 +159,15 @@ public class Error {
 			case AUTHENTICATION_FAILED:
 				return "Failed to authenticate, please check your login and password.";
 			case DOWNLOAD_FILE:
-				return "Error while downloading project files. Will try another project in a few minutes.";
+				return "Error while downloading the project files. Will try another project in a few minutes.";
 			case NOOUTPUTFILE:
-				return "Renderer shut down without saving an image. This could be a broken project, or you could be missing libraries Blender needs. Will try another project in a few minutes.";
+				return "The renderer shut down without saving an image. This could be a broken project, or you could be missing libraries that Blender needs. Will try another project in a few minutes.";
 			case IMAGE_TOO_LARGE:
 				return "The generated image is too big to be handled by the server. Will try another project in a few minutes.";
 			case RENDERER_CRASHED:
-				return "Renderer has crashed. This is usually because the project consumes too much memory, or is just broken. Will try another project in a few minutes.";
+				return "The renderer has crashed. This is usually because the project consumes too much memory, or is just broken. Will try another project in a few minutes.";
 			case RENDERER_CRASHED_PYTHON_ERROR:
-				return "Renderer has crashed due to Python error. Will try another project in a few minutes.";
+				return "The renderer has crashed due to a Python error. Will try another project in a few minutes.";
 			case RENDERER_OUT_OF_VIDEO_MEMORY:
 				return "Project tried to use too much video memory (VRAM). Will try another project in a few minutes.";
 			case RENDERER_OUT_OF_MEMORY:
@@ -187,13 +187,13 @@ public class Error {
 			case RENDERER_NOT_AVAILABLE:
 				return "The official Blender builds don't support rendering on this hardware.";
 			case MISSING_RENDERER:
-				return "Unable to locate the Blender renderer within the binary download.";
+				return "Unable to locate the Blender binaries within the working directory.";
 			case OS_NOT_SUPPORTED:
-				return "Operating System not supported.";
+				return "This Operating System is not supported.";
 			case CPU_NOT_SUPPORTED:
-				return "CPU not supported.";
+				return "This CPU is not supported.";
 			case ENGINE_NOT_AVAILABLE:
-				return "Project requires a rendering engine that isn't supported on this machine. Will try another project in a few minutes.";
+				return "The project requires a rendering engine that isn't supported on this machine. Will try another project in a few minutes.";
 			case NO_SPACE_LEFT_ON_DEVICE:
 				return "Your storage medium does not have enough free space available.";
 			case PATH_INVALID:
@@ -201,7 +201,7 @@ public class Error {
 			case NO_WRITE_PERMISSION:
 				return "Can't create/modify files due to missing write permissions in working directory.";
 			case IMAGE_WRONG_DIMENSION:
-				return "Rendered image was the wrong resolution. Project is configured incorrectly. Switching to another project.";
+				return "The rendered image had the wrong resolution. This project is configured incorrectly. Switching to another project.";
 			default:
 				return in.toString();
 		}
