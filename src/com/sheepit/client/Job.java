@@ -833,6 +833,14 @@ import java.util.regex.Pattern;
 			// Blender quit
 			return Error.Type.CPU_NOT_SUPPORTED;
 		}
+		else if (line.contains("Error: File format is not supported")) {
+			//09-03 23:36:03 (debug) Blender 2.83.19 (hash 86c526d2c733 built 2022-02-02 00:44:40)
+			//09-03 23:36:03 (debug) found bundled python: C:\Users\Username\Documents\sheepit\sheepit\f1f9e587201b428c9416faf614b677bf\2.83\python
+			//09-03 23:36:03 (debug) Error: File format is not supported in file 'C:\Users\Username\Documents\sheepit\sheepit\686c6bdbf752790b28c1b21180aa5db5\correndo4.blend'
+			//09-03 23:36:03 (debug) Blender quit
+			//09-03 23:36:03 (debug) end of rendering
+			return Error.Type.RENDERER_CRASHED;
+		}
 		return Type.OK;
 	}
 	
