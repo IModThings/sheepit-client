@@ -50,6 +50,8 @@ import com.sheepit.client.exception.FermeExceptionNoRendererAvailable;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
+import com.sheepit.client.exception.FermeExceptionPathInvalid;
+import com.sheepit.client.exception.FermeExceptionNoWritePermission;
 import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
 import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
@@ -390,7 +392,7 @@ import okhttp3.HttpUrl;
 					this.noJobRetryIter = 0;
 					
 					ret = this.work(this.renderingJob);
-					if (ret == Error.Type.NO_SPACE_LEFT_ON_DEVICE) {
+					if (ret == Error.Type.NO_SPACE_LEFT_ON_DEVICE || ret == Error.Type.PATH_INVALID || ret == Error.Type.NO_WRITE_PERMISSION ) {
 						Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
 						this.renderingJob = null;
 						this.gui.error(Error.humanString(ret));
@@ -746,9 +748,20 @@ import okhttp3.HttpUrl;
 				return Error.Type.CAN_NOT_CREATE_DIRECTORY;
 			}
 		}
-		catch (FermeExceptionNoSpaceLeftOnDevice e) {
+		catch (FermeException e) {
 			gui.setRenderingProjectName("");
-			return Error.Type.NO_SPACE_LEFT_ON_DEVICE;
+			if (e instanceof FermeExceptionNoSpaceLeftOnDevice) {
+				return Error.Type.NO_SPACE_LEFT_ON_DEVICE;
+			}
+			else if (e instanceof FermeExceptionPathInvalid) {
+				return Error.Type.PATH_INVALID;
+			}
+			else if (e instanceof FermeExceptionNoWritePermission) {
+				return Error.Type.NO_WRITE_PERMISSION;
+			}
+			else {
+				return Error.Type.UNKNOWN;
+			}
 		}
 		
 		final File scene_file = new File(ajob.getScenePath());
@@ -797,17 +810,17 @@ import okhttp3.HttpUrl;
 		return Error.Type.OK;
 	}
 	
-	protected Error.Type downloadSceneFile(Job ajob_) throws FermeExceptionNoSpaceLeftOnDevice {
+	protected Error.Type downloadSceneFile(Job ajob_) throws FermeException {
 		return this.downloadFile(ajob_, ajob_.getRequiredSceneArchivePath(), ajob_.getSceneMD5(),
 				String.format(LOCALE, "%s?type=job&job=%s", this.server.getPage("download-archive"), ajob_.getId()), "project");
 	}
 	
-	protected Error.Type downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
+	protected Error.Type downloadExecutable(Job ajob) throws FermeException {
 		return this.downloadFile(ajob, ajob.getRequiredRendererArchivePath(), ajob.getRendererMD5(),
 				String.format(LOCALE, "%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
 	}
 	
-	private Error.Type downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeExceptionNoSpaceLeftOnDevice {
+	private Error.Type downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeException {
 		File local_path_file = new File(local_path);
 		String update_ui = "Downloading " + download_type;
 		
@@ -937,7 +950,7 @@ import okhttp3.HttpUrl;
 		Utils.delete(new File(ajob.getSceneDirectory()));
 	}
 	
-	protected int prepareWorkingDirectory(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
+	protected int prepareWorkingDirectory(Job ajob) {
 		int ret;
 		String bestRendererArchive = ajob.getRequiredRendererArchivePath();
 		String renderer_archive = ajob.getRendererArchivePath();

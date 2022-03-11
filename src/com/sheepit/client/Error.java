@@ -54,7 +54,7 @@ public class Error {
 		IMAGE_WRONG_DIMENSION(26),
 		
 		// internal error handling
-		NO_SPACE_LEFT_ON_DEVICE(100), ERROR_BAD_RESPONSE(101),
+		NO_SPACE_LEFT_ON_DEVICE(100), ERROR_BAD_RESPONSE(101), PATH_INVALID(102), NO_WRITE_PERMISSION(103)
 		;
 		
 		private final int id;
@@ -195,7 +195,11 @@ public class Error {
 			case ENGINE_NOT_AVAILABLE:
 				return "Project requires a rendering engine that isn't supported on this machine. Will try another project in a few minutes.";
 			case NO_SPACE_LEFT_ON_DEVICE:
-				return "No space left on hard disk.";
+				return "Your storage medium does not have enough free space available.";
+			case PATH_INVALID:
+				return "The working directory path is not valid";
+			case NO_WRITE_PERMISSION:
+				return "Can't create/modify files due to missing write permissions in working directory.";
 			case IMAGE_WRONG_DIMENSION:
 				return "Rendered image was the wrong resolution. Project is configured incorrectly. Switching to another project.";
 			default:
