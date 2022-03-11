@@ -2,4 +2,4 @@
 .gradle
 build
 out
-
+exe-wrapper/sheepit-wrapper.exe
