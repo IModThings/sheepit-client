@@ -20,7 +20,6 @@
 package com.sheepit.client;
 
 import com.sheepit.client.Error.ServerCode;
-import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.w3c.dom.Document;
@@ -48,8 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, char[] password, Log log)
-			throws FermeExceptionNoSpaceLeftOnDevice {
+	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, char[] password, Log log) {
 		try {
 			ZipFile zipFile = new ZipFile(zipFileName_);
 //			unzipParameters.setIgnoreDateTimeAttributes(true);

@@ -72,6 +72,8 @@ import com.sheepit.client.exception.FermeExceptionNoRendererAvailable;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
+import com.sheepit.client.exception.FermeExceptionPathInvalid;
+import com.sheepit.client.exception.FermeExceptionNoWritePermission;
 import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
 import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
@@ -448,7 +450,7 @@ public class Server extends Thread {
 		}
 	}
 	
-	public Error.Type HTTPGetFile(String url_, String destination_, Gui gui_, String status_) throws FermeExceptionNoSpaceLeftOnDevice {
+	public Error.Type HTTPGetFile(String url_, String destination_, Gui gui_, String status_) throws FermeException {
 		InputStream is = null;
 		OutputStream output = null;
 
@@ -503,7 +505,14 @@ public class Server extends Thread {
 			return Error.Type.OK;
 		}
 		catch (Exception e) {
-			if (Utils.noFreeSpaceOnDisk(new File(destination_).getParent(), log)) {
+			File destFile = new File(destination_);
+			if (destFile.getParentFile().isDirectory() == false) {
+				throw new FermeExceptionPathInvalid();
+			}
+			else if (destFile.canWrite() == false) {
+				throw new FermeExceptionNoWritePermission();
+			}
+			else if (Utils.noFreeSpaceOnDisk(destFile.getParent(), log)) {
 				throw new FermeExceptionNoSpaceLeftOnDevice();
 			}
 			
