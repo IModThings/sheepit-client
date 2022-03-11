@@ -19,6 +19,7 @@
 
 package com.sheepit.client.standalone.swing.activity;
 
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -138,12 +139,9 @@ public class Settings implements Activity {
 		try {
 			// Include the version of the app as a watermark in the SheepIt logo.
 			final BufferedImage watermark = ImageIO.read(getClass().getResource("/sheepit-logo.png"));
-			
-			Graphics gph = watermark.getGraphics();
-			gph.setFont(gph.getFont().deriveFont(12f));
-			gph.drawString("v" + Configuration.jarVersion, 335, 120);
-			gph.dispose();
-			
+			String versionString = "v" + Configuration.jarVersion;
+			drawVersionStringOnImage(watermark, versionString);
+
 			labelImage = new JLabel(new ImageIcon(watermark));
 		}
 		catch (Exception e) {
@@ -559,7 +557,24 @@ public class Settings implements Activity {
 			new SaveAction().actionPerformed(null);
 		}
 	}
-	
+
+	private void drawVersionStringOnImage(final BufferedImage image, String versionString) {
+		var watermarkWidth = image.getWidth();
+		var watermarkHeight = image.getHeight();
+
+		Graphics gph = image.getGraphics();
+		gph.setFont(gph.getFont().deriveFont(12f));
+
+		FontMetrics fontMetrics = gph.getFontMetrics();
+		// move text to the very right of the image respecting its length
+		int x = watermarkWidth - fontMetrics.stringWidth(versionString);
+		// the bottom of the image, but give enough headroom for descending letters like g
+		int y = watermarkHeight - fontMetrics.getMaxDescent();
+
+		gph.drawString(versionString, x, y);
+		gph.dispose();
+	}
+
 	public void resizeWindow() {}
 	
 	public boolean checkDisplaySaveButton() {
