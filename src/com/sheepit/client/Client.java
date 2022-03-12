@@ -1035,12 +1035,22 @@ import okhttp3.HttpUrl;
 		this.log.debug(checkpoint, "path frame " + ajob.getOutputImagePath());
 		
 		this.isValidatingJob = true;
-		int nb_try = 1;
 		int max_try = 3;
 		ServerCode ret = ServerCode.UNKNOWN;
 		Type confirmJobReturnCode = Error.Type.OK;
 		retryLoop:
-		while (nb_try < max_try && ret != ServerCode.OK) {
+		for (int nb_try = 0; nb_try < max_try; nb_try++) {
+			if (nb_try >= 1) {
+				// sleep before retrying
+				this.log.debug(checkpoint, "Sleep for 32s before trying to re-upload the frame");
+				try {
+					Thread.sleep(32000);
+				}
+				catch (InterruptedException e) {
+					confirmJobReturnCode = Error.Type.UNKNOWN;
+				}
+			}
+
 			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath(), checkpoint, this.gui);
 			switch (ret) {
 				case OK:
@@ -1069,17 +1079,6 @@ import okhttp3.HttpUrl;
 				default:
 					// do nothing, try to do a request on the next loop
 					break;
-			}
-			
-			nb_try++;
-			if (ret != ServerCode.OK && nb_try < max_try) {
-				try {
-					this.log.debug(checkpoint, "Sleep for 32s before trying to re-upload the frame");
-					Thread.sleep(32000);
-				}
-				catch (InterruptedException e) {
-					confirmJobReturnCode = Error.Type.UNKNOWN;
-				}
 			}
 		}
 		
