@@ -771,7 +771,7 @@ import java.util.regex.Pattern;
 			// Error: EXCEPTION_ACCESS_VIOLATION
 			return Error.Type.RENDERER_CRASHED;
 		}
-		else if (line.contains("Fatal Python error: Py_Initialize")) {
+		else if (line.contains("Fatal Python error:")) {
 			// Fatal Python error: Py_Initialize: unable to load the file system codec
 			// ImportError: No module named 'encodings'
 			// Current thread 0x0000388c (most recent call first):
