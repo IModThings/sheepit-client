@@ -54,7 +54,10 @@ public class Error {
 		IMAGE_WRONG_DIMENSION(26),
 		
 		// internal error handling
-		NO_SPACE_LEFT_ON_DEVICE(100), ERROR_BAD_RESPONSE(101), PATH_INVALID(102), NO_WRITE_PERMISSION(103)
+		NO_SPACE_LEFT_ON_DEVICE(100),
+		ERROR_BAD_RESPONSE(101),
+		PATH_INVALID(102),
+		NO_WRITE_PERMISSION(103),
 		;
 		
 		private final int id;
@@ -98,7 +101,10 @@ public class Error {
 		KEEPMEALIVE_STOP_RENDERING(400),
 		
 		// internal error handling
-		ERROR_NO_ROOT(2), ERROR_BAD_RESPONSE(3), ERROR_REQUEST_FAILED(5);
+		ERROR_NO_ROOT(2),
+		ERROR_BAD_RESPONSE(3),
+		ERROR_REQUEST_FAILED(5),
+		;
 		
 		private final int id;
 		
