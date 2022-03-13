@@ -132,8 +132,6 @@ import okhttp3.HttpUrl;
 			step = this.log.newCheckPoint();
 			this.gui.status("Starting");
 			
-			this.configuration.cleanWorkingDirectory();
-			
 			Error.Type ret;
 			ret = this.server.getConfiguration();
 			
@@ -163,7 +161,10 @@ import okhttp3.HttpUrl;
 					}
 				}, this.configuration.getShutdownTime());
 			}
-			
+
+			// Check integrity of all files in the working directories
+			this.configuration.cleanWorkingDirectory();
+
 			this.startTime = new Date().getTime();
 			this.server.start(); // for staying alive
 			
@@ -509,8 +510,7 @@ import okhttp3.HttpUrl;
 				OS.getOS().kill(this.renderingJob.getProcessRender().getProcess());
 			}
 		}
-		
-		// 		this.configuration.workingDirectory.delete();
+
 		this.configuration.removeWorkingDirectory();
 		
 		if (this.server == null) {
