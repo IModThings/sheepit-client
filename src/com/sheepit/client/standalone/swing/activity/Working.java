@@ -231,8 +231,7 @@ public class Working implements Activity {
 		last_frame_panel.add(lastRenderTime);
 		last_frame_panel.add(lastRender);
 		
-		ImageIcon image = new ImageIcon(getClass().getResource("/sheepit-logo.png"));
-		JLabel labelImage = new JLabel(image);
+		JLabel labelImage = GuiSwing.createLogoWithWatermark();
 		labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
 		parent.getContentPanel().add(labelImage);
 		

@@ -19,8 +19,6 @@
 
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -28,19 +26,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -134,22 +129,9 @@ public class Settings implements Activity {
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		int currentRow = 0;
-		
-		JLabel labelImage;
-		try {
-			// Include the version of the app as a watermark in the SheepIt logo.
-			final BufferedImage watermark = ImageIO.read(getClass().getResource("/sheepit-logo.png"));
-			String versionString = "v" + Configuration.jarVersion;
-			drawVersionStringOnImage(watermark, versionString);
 
-			labelImage = new JLabel(new ImageIcon(watermark));
-		}
-		catch (Exception e) {
-			// If something fails, we just show the SheepIt logo (without any watermark)
-			ImageIcon image = new ImageIcon(getClass().getResource("/sheepit-logo.png"));
-			labelImage = new JLabel(image);
-		}
-		
+		JLabel labelImage = GuiSwing.createLogoWithWatermark();
+
 		constraints.fill = GridBagConstraints.CENTER;
 		
 		constraints.gridwidth = 2;
@@ -556,23 +538,6 @@ public class Settings implements Activity {
 			haveAutoStarted = true;
 			new SaveAction().actionPerformed(null);
 		}
-	}
-
-	private void drawVersionStringOnImage(final BufferedImage image, String versionString) {
-		var watermarkWidth = image.getWidth();
-		var watermarkHeight = image.getHeight();
-
-		Graphics gph = image.getGraphics();
-		gph.setFont(gph.getFont().deriveFont(12f));
-
-		FontMetrics fontMetrics = gph.getFontMetrics();
-		// move text to the very right of the image respecting its length
-		int x = watermarkWidth - fontMetrics.stringWidth(versionString);
-		// the bottom of the image, but give enough headroom for descending letters like g
-		int y = watermarkHeight - fontMetrics.getMaxDescent();
-
-		gph.drawString(versionString, x, y);
-		gph.dispose();
 	}
 
 	public void resizeWindow() {}

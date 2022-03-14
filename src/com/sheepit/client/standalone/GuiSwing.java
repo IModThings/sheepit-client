@@ -32,10 +32,12 @@ import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -44,10 +46,14 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import java.awt.AWTException;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
+import java.awt.RenderingHints;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
@@ -58,12 +64,59 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
-	
+	private static final String logoPath = "/sheepit-logo.png";
+
+	public static void drawVersionStringOnImage(final BufferedImage image, String versionString) {
+		var watermarkWidth = image.getWidth();
+		var watermarkHeight = image.getHeight();
+
+		Graphics2D gph = (Graphics2D) image.getGraphics();
+		// use anti aliasing to smooth version string
+		gph.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		gph.setFont(gph.getFont().deriveFont(12f));
+
+		FontMetrics fontMetrics = gph.getFontMetrics();
+		// move text to the very right of the image respecting its length
+		int x = watermarkWidth - fontMetrics.stringWidth(versionString);
+		// the bottom of the image, but give enough headroom for descending letters like g
+		int y = watermarkHeight - fontMetrics.getMaxDescent();
+
+		gph.drawString(versionString, x, y);
+		gph.dispose();
+	}
+
+	@NotNull public static JLabel createLogoWithWatermark() {
+		final URL logoURL = GuiSwing.class.getResource(logoPath);
+
+		// If logo cannot be found, return dummy image
+		if (logoURL == null) {
+			System.err.println("Error: Unable to find logo " + logoPath);
+			return new JLabel();
+		}
+
+		JLabel labelImage;
+		try {
+			// Include the version of the app as a watermark in the SheepIt logo.
+			final BufferedImage watermark = ImageIO.read(logoURL);
+			String versionString = "v" + Configuration.jarVersion;
+			drawVersionStringOnImage(watermark, versionString);
+
+			labelImage = new JLabel(new ImageIcon(watermark));
+		}
+		catch (Exception e) {
+			// If something fails, we just show the SheepIt logo (without any watermark)
+			ImageIcon image = new ImageIcon(logoURL);
+			labelImage = new JLabel(image);
+		}
+		return labelImage;
+	}
+
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}
