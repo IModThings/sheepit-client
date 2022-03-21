@@ -713,6 +713,30 @@ import java.util.regex.Pattern;
 			// Refer to the Cycles GPU rendering documentation for possible solutions:
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
+		else if (line.contains("Error: Out of memory in CUDA")) {
+			// 15-03 21:13:45 (debug) Fra:27 Mem:8441.68M (Peak 9675.81M) | Time:00:16.27 | Mem:8411.20M, Peak:8411.20M | Scene, View Layer | Loading render kernels (may take a few minutes the first time)
+			// 15-03 21:13:45 (debug) Out of memory in CUDA queue enqueue (integrator_shade_surface)
+			// 15-03 21:13:45 (debug) Refer to the Cycles GPU rendering documentation for possible solutions:
+			// 15-03 21:13:45 (debug) https://docs.blender.org/manual/en/latest/render/cycles/gpu_rendering.html
+			// 15-03 21:13:45 (debug) Fra:27 Mem:8441.68M (Peak 9675.81M) | Time:00:16.38 | Mem:8411.27M, Peak:8411.27M | Scene, View Layer | Updating Scene
+			// 15-03 21:13:45 (debug) Fra:27 Mem:8441.68M (Peak 9675.81M) | Time:00:16.38 | Mem:8411.27M, Peak:8411.27M | Scene, View Layer | Updating Shaders
+			// 15-03 21:13:45 (debug) Fra:27 Mem:8447.08M (Peak 9675.81M) | Time:00:16.63 | Mem:8763.00M, Peak:8763.00M | Scene, View Layer | Out of memory in CUDA queue enqueue (integrator_shade_surface)
+			// 15-03 21:13:45 (debug) Error: Out of memory in CUDA queue enqueue (integrator_shade_surface)
+			// 15-03 21:13:46 (debug) Blender quit
+			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
+		else if (line.contains("Error: System is out of GPU memory")) {
+			// 16-03 18:37:37 (debug) Fra:192 Mem:15826.70M (Peak 15831.18M) | Time:02:21.86 | Mem:6622.87M, Peak:6625.35M | Scene, ViewLayer | Loading denoising kernels (may take a few minutes the first time)
+			// 16-03 18:37:37 (debug) System is out of GPU memory
+			// 16-03 18:37:37 (debug) Refer to the Cycles GPU rendering documentation for possible solutions:
+			// 16-03 18:37:37 (debug) https://docs.blender.org/manual/en/latest/render/cycles/gpu_rendering.html
+			// 16-03 18:37:37 (debug) System is out of GPU memory
+			// 16-03 18:37:38 (debug) Fra:192 Mem:15831.01M (Peak 15831.18M) | Time:02:23.11 | Mem:7017.46M, Peak:7017.46M | Scene, ViewLayer | System is out of GPU memory
+			// 16-03 18:37:38 (debug) Error: System is out of GPU memory
+			// 16-03 18:37:40 (debug) Blender quit
+			// 16-03 18:37:40 (debug) end of rendering
+			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
 		else if (line.contains("CUDA device supported only with compute capability")) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
