@@ -20,6 +20,7 @@
 package com.sheepit.client.standalone.text;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +49,10 @@ public class CLIInputObserver implements Runnable {
 			try {
 				line = in.readLine();
 			}
-			catch (Exception e) {
-				// TODO: handle exception
+			catch (IOException e) {
+				// if the program has been launched into the background (e.g. with nohup), input is not valid
+				client.getLog().info("Unable to read user input, ignoring all further inputs");
+				break;
 			}
 			for (CLIInputListener cliil : listeners)
 				cliil.commandEntered(client, line);
@@ -59,7 +62,7 @@ public class CLIInputObserver implements Runnable {
 		}
 		catch (Exception e) {
 			// TODO: handle exception
+			client.getLog().error("FIXME: Unhandled exception while closing InputStreamReader(): " + e);
 		}
-		
 	}
 }
