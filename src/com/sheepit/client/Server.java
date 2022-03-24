@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.net.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -501,16 +502,15 @@ public class Server extends Thread {
 			this.log.debug(String.format("File downloaded at %s/s, written %d bytes", new TransferStats(size, duration.getSeconds() + 1).getAverageSessionSpeed(), written));
 
 			this.lastRequestTime = new Date().getTime();
-			
 			return Error.Type.OK;
 		}
 		catch (Exception e) {
 			File destFile = new File(destination_);
-			if (destFile.getParentFile().isDirectory() == false) {
-				throw new FermeExceptionPathInvalid();
-			}
-			else if (destFile.canWrite() == false) {
+			if (Files.isWritable(destFile.getParentFile().toPath()) == false) {
 				throw new FermeExceptionNoWritePermission();
+			}
+			else if (destFile.getParentFile().isDirectory() == false) {
+				throw new FermeExceptionPathInvalid();
 			}
 			else if (Utils.noFreeSpaceOnDisk(destFile.getParent(), log)) {
 				throw new FermeExceptionNoSpaceLeftOnDevice();
