@@ -41,7 +41,7 @@ public class Mac extends OS {
 	}
 	
 	@Override public String getRenderBinaryPath() {
-		return "Blender" + File.separator + "blender.app" + File.separator + "Contents" + File.separator + "MacOS" + File.separator + "blender";
+		return "Blender" + File.separator + "Blender.app" + File.separator + "Contents" + File.separator + "MacOS" + File.separator + "Blender";
 	}
 	
 	@Override public Process exec(List<String> command, Map<String, String> env) throws IOException {
