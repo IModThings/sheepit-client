@@ -46,20 +46,3 @@ jar {
 		configurations.implementation.collect { it.isDirectory() ? it : zipTree(it) }
 	}
 }
-
-sourceSets {
-	main {
-		java {
-			srcDirs = ['src']
-		}
-		resources {
-			srcDirs = ['resources']
-		}
-	}
-	
-	test {
-		java {
-			srcDirs = ['test']
-		}
-	}
-}
