@@ -842,7 +842,7 @@ import java.util.regex.Pattern;
 		else if (line.contains("Warning: Cycles is not enabled!")) {
 			return Error.Type.ENGINE_NOT_AVAILABLE;
 		}
-		else if (line.contains("OpenImageDenoise error: SSE4.1 support is required at minimum")) {
+		else if (line.contains("OpenImageDenoise error: SSE4.1 support is required at minimum") || line.contains("OpenImageDenoiser is not supported on this CPU:") || line.contains("No device available to denoise on")) {
 			// denoising capability detection
 			// Fra:201 Mem:8.89M (Peak 10.09M) | Time:00:00.04 | Mem:0.27M, Peak:0.27M | Scene, View Layer | Updating Device | Writing constant memory
 			// Fra:201 Mem:8.89M (Peak 10.09M) | Time:00:00.04 | Mem:0.27M, Peak:0.27M | Scene, View Layer | Loading denoising kernels (may take a few minutes the first time)
@@ -855,7 +855,7 @@ import java.util.regex.Pattern;
 			// Saved: '/tmp/5/sheepit/1541_0201.png'
 			// Time: 00:09.30 (Saving: 00:00.55)
 			// Blender quit
-			return Error.Type.CPU_NOT_SUPPORTED;
+			return Error.Type.DENOISING_NOT_SUPPORTED;
 		}
 		else if (line.contains("Error: File format is not supported")) {
 			//09-03 23:36:03 (debug) Blender 2.83.19 (hash 86c526d2c733 built 2022-02-02 00:44:40)
