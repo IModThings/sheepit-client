@@ -52,6 +52,7 @@ public class Error {
 		ENGINE_NOT_AVAILABLE(27),
 		VALIDATION_FAILED(25),
 		IMAGE_WRONG_DIMENSION(26),
+		DENOISING_NOT_SUPPORTED(29),
 		
 		// internal error handling
 		NO_SPACE_LEFT_ON_DEVICE(100),
@@ -198,6 +199,8 @@ public class Error {
 				return "This Operating System is not supported.";
 			case CPU_NOT_SUPPORTED:
 				return "This CPU is not supported.";
+			case DENOISING_NOT_SUPPORTED:
+				return "Denoising is not supported on this device.";
 			case ENGINE_NOT_AVAILABLE:
 				return "The project requires a rendering engine that isn't supported on this machine. Will try another project in a few minutes.";
 			case NO_SPACE_LEFT_ON_DEVICE:
