@@ -725,7 +725,7 @@ import java.util.regex.Pattern;
 			// 15-03 21:13:46 (debug) Blender quit
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.contains("Error: System is out of GPU memory")) {
+		else if (line.contains("Error: System is out of GPU memory") || line.contains("Error: System is out of GPU and shared host memory") || line.contains("Error: Out of memory in cu")) {
 			// 16-03 18:37:37 (debug) Fra:192 Mem:15826.70M (Peak 15831.18M) | Time:02:21.86 | Mem:6622.87M, Peak:6625.35M | Scene, ViewLayer | Loading denoising kernels (may take a few minutes the first time)
 			// 16-03 18:37:37 (debug) System is out of GPU memory
 			// 16-03 18:37:37 (debug) Refer to the Cycles GPU rendering documentation for possible solutions:
