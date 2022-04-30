@@ -24,7 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -960,12 +962,7 @@ import okhttp3.HttpUrl;
 		if (!new File(renderer_archive).exists()) {
 			this.gui.status("Copying renderer from shared downloads directory");
 			
-			try {
-				Files.copy(Paths.get(bestRendererArchive), Paths.get(renderer_archive), StandardCopyOption.REPLACE_EXISTING);
-			}
-			catch (IOException e) {
-				this.gui.error("Error while copying renderer from shared downloads directory to working dir");
-			}
+			copySharedArchive(bestRendererArchive, renderer_archive);
 		}
 		
 		if (!renderer_path_file.exists()) {
@@ -999,13 +996,7 @@ import okhttp3.HttpUrl;
 		
 		if (!new File(scene_archive).exists()) {
 			this.gui.status("Copying scene from common directory");
-			
-			try {
-				Files.copy(Paths.get(bestSceneArchive), Paths.get(scene_archive), StandardCopyOption.REPLACE_EXISTING);
-			}
-			catch (IOException e) {
-				this.gui.error("Error while copying scene from common directory to working dir");
-			}
+			copySharedArchive(bestSceneArchive, scene_archive);
 		}
 		
 		if (!scene_path_file.exists()) {
@@ -1027,7 +1018,29 @@ import okhttp3.HttpUrl;
 		
 		return 0;
 	}
-	
+
+	private void copySharedArchive(String existingArchive, String targetArchive) {
+		Path existingArchivePath = Paths.get(existingArchive);
+		Path targetArchivePath = Paths.get(targetArchive);
+		try {
+			try {
+				Files.createLink(targetArchivePath, existingArchivePath);
+				log.debug("Created hardlink from " + targetArchivePath + " to " + existingArchivePath);
+			}
+			catch (UnsupportedOperationException // underlying file system does not support hard-linking
+				| FileSystemException       // cache-dir and shared-zip are on separate file systems, even though hard-linking is supported
+				| SecurityException         // user is not allowed to create hard-links
+				ignore) {
+				// Creating hardlinks might not be supported on some filesystems
+				log.debug("Failed to create hardlink, falling back to copying file to " + targetArchivePath);
+				Files.copy(existingArchivePath, targetArchivePath, StandardCopyOption.REPLACE_EXISTING);
+			}
+		}
+		catch (IOException e) {
+			this.gui.error("Error while copying " + existingArchive + " from shared downloads directory to working dir");
+		}
+	}
+
 	protected Error.Type confirmJob(Job ajob, int checkpoint) {
 		String url_real = String.format(LOCALE, "%s&rendertime=%d&memoryused=%s", ajob.getValidationUrl(), ajob.getProcessRender().getDuration(),
 				ajob.getProcessRender().getPeakMemoryUsed());
