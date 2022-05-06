@@ -1049,19 +1049,21 @@ import okhttp3.HttpUrl;
 		
 		this.isValidatingJob = true;
 		int max_try = 3;
+		int timeToSleep = 22000;
 		ServerCode ret = ServerCode.UNKNOWN;
 		Type confirmJobReturnCode = Error.Type.OK;
 		retryLoop:
 		for (int nb_try = 0; nb_try < max_try; nb_try++) {
 			if (nb_try >= 1) {
 				// sleep before retrying
-				this.log.debug(checkpoint, "Sleep for 32s before trying to re-upload the frame");
+				this.log.debug(checkpoint, "Sleep for " + timeToSleep / 1000 + "s before trying to re-upload the frame");
 				try {
-					Thread.sleep(32000);
+					Thread.sleep(timeToSleep);
 				}
 				catch (InterruptedException e) {
 					confirmJobReturnCode = Error.Type.UNKNOWN;
 				}
+				timeToSleep *= 2;    // exponential backoff
 			}
 
 			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath(), checkpoint, this.gui);
