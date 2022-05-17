@@ -865,6 +865,14 @@ import java.util.regex.Pattern;
 			//09-03 23:36:03 (debug) end of rendering
 			return Error.Type.RENDERER_CRASHED;
 		}
+		else if (line.contains("Unable to open a display")) {
+			//17-03 07:38:47 (debug) Fra:7 Mem:1667.27M (Peak 1762.19M) | Time:06:27.86 | Mem:1184.92M, Peak:1194.58M | Scene, ViewLayer | Sample 187/187
+			//17-03 07:38:47 (debug) Fra:7 Mem:1667.27M (Peak 1762.19M) | Time:06:27.86 | Mem:1184.92M, Peak:1194.58M | Scene, ViewLayer | Finished
+			//17-03 07:38:47 (debug) Unable to open a display
+			//17-03 07:38:47 (debug) end of rendering
+			//17-03 07:38:47 (error) Job::render no picture file found (after finished render (filename_without_extension 116372253_0007)
+			return Error.Type.CURRENTLY_HEADLESS;
+		}
 		return Type.OK;
 	}
 	

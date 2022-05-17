@@ -52,6 +52,7 @@ public class Error {
 		ENGINE_NOT_AVAILABLE(27),
 		VALIDATION_FAILED(25),
 		IMAGE_WRONG_DIMENSION(26),
+		CURRENTLY_HEADLESS(28),
 		DENOISING_NOT_SUPPORTED(29),
 		
 		// internal error handling
@@ -211,6 +212,8 @@ public class Error {
 				return "Can't create/modify files due to missing write permissions in working directory.";
 			case IMAGE_WRONG_DIMENSION:
 				return "The rendered image had the wrong resolution. This project is configured incorrectly. Switching to another project.";
+			case CURRENTLY_HEADLESS:
+				return "Blender can not open a display to create an OpenGL context needed for EEVEE/GPencil. Will try another project in a few minutes.";
 			default:
 				return in.toString();
 		}
