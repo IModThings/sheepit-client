@@ -50,6 +50,7 @@ public class SettingsLoader {
 		
 		PRIORITY("priority"),
 		CACHE_DIR("cache-dir"),
+		SHARED_ZIP("shared-zip"),
 		COMPUTE_METHOD("compute-method"),
 		GPU("compute-gpu"),
 		CORES("cores"),
@@ -122,6 +123,7 @@ public class SettingsLoader {
 	private Option<String> ram;
 	private Option<String> renderTime;
 	private Option<String> cacheDir;
+	private Option<String> sharedZip;
 	private Option<String> autoSignIn;
 	private Option<String> useSysTray;
 	private Option<String> headless;
@@ -140,8 +142,8 @@ public class SettingsLoader {
 	
 	public void setSettings(String path_, String login_, String password_, String proxy_, String hostname_,
 		ComputeType computeMethod_, GPUDevice gpu_, Integer cores_, Long maxRam_,
-		Integer maxRenderTime_, String cacheDir_, Boolean autoSignIn_, Boolean useSysTray_, Boolean isHeadless,
-		String ui_,	String theme_, Integer priority_) {
+		Integer maxRenderTime_, String cacheDir_, String sharedZip_, Boolean autoSignIn_, Boolean useSysTray_,
+		Boolean isHeadless, String ui_,	String theme_, Integer priority_) {
 		if (path_ == null) {
 			path = OS.getOS().getDefaultConfigFilePath();
 		}
@@ -153,6 +155,7 @@ public class SettingsLoader {
 		proxy = setValue(proxy_, proxy, ARG_PROXY);
 		hostname = setValue(hostname_, hostname, ARG_HOSTNAME);
 		cacheDir = setValue(cacheDir_, cacheDir, ARG_CACHE_DIR);
+		sharedZip = setValue(sharedZip_, sharedZip, ARG_SHARED_ZIP);
 		autoSignIn = setValue(autoSignIn_.toString(), autoSignIn, "");
 		useSysTray = setValue(useSysTray_.toString(), useSysTray, ARG_NO_SYSTRAY);
 		headless = setValue(isHeadless.toString(), headless, ARG_HEADLESS);
@@ -210,8 +213,8 @@ public class SettingsLoader {
 	 * @param argsList a list of the launch arguments
 	 */
 	public void markLaunchSettings(List<String> argsList) {
-		Option options[] = { login, password, proxy, hostname, computeMethod, gpu, cores, ram, renderTime, cacheDir, autoSignIn,
-			useSysTray, headless, ui, theme, priority };
+		Option options[] = { login, password, proxy, hostname, computeMethod, gpu, cores, ram, renderTime, cacheDir, sharedZip,
+			autoSignIn, useSysTray, headless, ui, theme, priority };
 		
 		for (Option option : options) {
 			if (option != null && argsList.contains(option.getLaunchFlag())) {
@@ -263,6 +266,7 @@ public class SettingsLoader {
 			setProperty(prop, configFileProp, PropertyNames.PRIORITY,
 				new Option<>(priority != null ? priority.getValue().toString() : null, priority.isLaunchCommand(), ARG_PRIORITY));
 			setProperty(prop, configFileProp, PropertyNames.CACHE_DIR, cacheDir);
+			setProperty(prop, configFileProp, PropertyNames.SHARED_ZIP, sharedZip);
 			setProperty(prop, configFileProp, PropertyNames.COMPUTE_METHOD, computeMethod);
 			setProperty(prop, configFileProp, PropertyNames.GPU, gpu);
 			setProperty(prop, configFileProp, PropertyNames.CORES, cores);
@@ -346,6 +350,8 @@ public class SettingsLoader {
 			prop.load(input);
 			
 			cacheDir = loadConfigOption(prop, PropertyNames.CACHE_DIR, cacheDir, ARG_CACHE_DIR);
+			
+			sharedZip = loadConfigOption(prop, PropertyNames.SHARED_ZIP, sharedZip, ARG_SHARED_ZIP);
 			
 			computeMethod = loadConfigOption(prop, PropertyNames.COMPUTE_METHOD, computeMethod, ARG_COMPUTE_METHOD);
 			
@@ -488,6 +494,10 @@ public class SettingsLoader {
 			config.setMaxRenderTime(Integer.parseInt(renderTime.getValue()));
 		}
 		
+		if (config.getSharedDownloadsDirectory() == null && sharedZip != null) {
+			config.setSharedDownloadsDirectory(new File(sharedZip.getValue()));
+		}
+		
 		if (config.isUserHasSpecifiedACacheDir() == false && cacheDir != null) {
 			config.setCacheDir(new File(cacheDir.getValue()));
 		}
@@ -525,6 +535,7 @@ public class SettingsLoader {
 		this.computeMethod = null;
 		this.gpu = null;
 		this.cacheDir = null;
+		this.sharedZip = null;
 		this.autoSignIn = null;
 		this.useSysTray = new Option<>(String.valueOf(defaultConfigValues.isUseSysTray()), ARG_NO_SYSTRAY);
 		this.headless = new Option<>(String.valueOf(defaultConfigValues.isHeadless()), ARG_HEADLESS);
@@ -540,7 +551,7 @@ public class SettingsLoader {
 	
 	@Override public String toString() {
 		return String.format(
-			"SettingsLoader [path=%s, login=%s, password=%s, computeMethod=%s, gpu=%s, cacheDir=%s, theme=%s, priority=%d, autosign=%s, usetray=%s, headless=%s]",
-			path, login, password, computeMethod, gpu, cacheDir, theme, priority, autoSignIn, useSysTray, headless);
+			"SettingsLoader [path=%s, login=%s, password=%s, computeMethod=%s, gpu=%s, cacheDir=%s, sharedZip=%s, theme=%s, priority=%d, autosign=%s, usetray=%s, headless=%s]",
+			path, login, password, computeMethod, gpu, cacheDir, sharedZip, theme, priority, autoSignIn, useSysTray, headless);
 	}
 }

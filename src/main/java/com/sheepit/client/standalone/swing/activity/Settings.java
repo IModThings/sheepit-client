@@ -748,8 +748,9 @@ public class Settings implements Activity {
 			if (saveFile.isSelected()) {
 				parent.getSettingsLoader()
 					.setSettings(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method,
-						selected_gpu, cpu_cores, max_ram, max_rendertime, getCachePath(config), autoSignIn.isSelected(), useSysTray.isSelected(),
-						headlessCheckbox.isSelected(), GuiSwing.type, themeOptionsGroup.getSelection().getActionCommand(), config.getPriority());
+						selected_gpu, cpu_cores, max_ram, max_rendertime, getCachePath(config), getSharedPath(config), autoSignIn.isSelected(),
+						useSysTray.isSelected(), headlessCheckbox.isSelected(), GuiSwing.type, themeOptionsGroup.getSelection().getActionCommand(),
+						config.getPriority());
 				
 				// wait for successful authentication (to store the public key)
 				// or do we already have one?
@@ -801,6 +802,14 @@ public class Settings implements Activity {
 				cachePath = config.getCacheDirForSettings().getAbsolutePath();
 			}
 			return cachePath;
+		}
+		
+		private String getSharedPath(Configuration config) {
+			String sharedPath = null;
+			if (config.getSharedDownloadsDirectory() != null) {
+				sharedPath = config.getSharedDownloadsDirectory().getAbsolutePath();
+			}
+			return sharedPath;
 		}
 	}
 	
