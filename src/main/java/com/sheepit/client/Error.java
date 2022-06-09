@@ -60,6 +60,7 @@ public class Error {
 		ERROR_BAD_UPLOAD_RESPONSE(101),
 		PATH_INVALID(102),
 		NO_WRITE_PERMISSION(103),
+		SERVER_DOWN(104),
 		;
 		
 		private final int id;
@@ -162,6 +163,8 @@ public class Error {
 				return "Corrupt response from the server when trying to upload data. The server might be overloaded or be encountering other issues. Will try again in a few minutes.";
 			case NETWORK_ISSUE:
 				return "Could not connect to the server, please check your connection to the internet.";
+			case SERVER_DOWN:
+				return "Server is down.";
 			case TOO_OLD_CLIENT:
 				return "This client is too old, you need to update it.";
 			case AUTHENTICATION_FAILED:

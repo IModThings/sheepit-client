@@ -219,7 +219,7 @@ public class Server extends Thread {
 			
 			this.log.debug("Server::getConfiguration url " + remoteURL.build().toString());
 			
-			Response response = this.HTTPRequest(remoteURL, formBody);
+			Response response = this.HTTPRequest(remoteURL, formBody, false);
 			int r = response.code();
 			String contentType = response.body().contentType().toString();
 			
@@ -238,6 +238,10 @@ public class Server extends Thread {
 				else {
 					this.user_config.setPassword(publickey);
 				}
+			}
+			else if (r == HttpURLConnection.HTTP_NOT_FOUND) {
+				// most likely the server instance is down but not the frontend proxy (traefik)
+				return Error.Type.SERVER_DOWN;
 			}
 		}
 		catch (ConnectException e) {
@@ -440,6 +444,34 @@ public class Server extends Thread {
 			response = httpClient.newCall(request).execute();
 			
 			if (!response.isSuccessful()) {
+				throw new IOException("Unexpected code " + response);
+			}
+			
+			this.lastRequestTime = new Date().getTime();
+			return response;
+		}
+		catch (IOException e) {
+			throw new IOException("Unexpected response from HTTP Stack" + e.getMessage());
+		}
+	}
+	
+	public Response HTTPRequest(HttpUrl.Builder httpUrlBuilder, RequestBody data_, boolean checkIsSuccessful) throws IOException {
+		String url = httpUrlBuilder.build().toString();
+		Request.Builder builder = new Request.Builder().addHeader("User-Agent", HTTP_USER_AGENT).url(url);
+		
+		this.log.debug("Server::HTTPRequest url(" + url + ")");
+		
+		if (data_ != null) {
+			builder.post(data_);
+		}
+		
+		Request request = builder.build();
+		Response response = null;
+		
+		try {
+			response = httpClient.newCall(request).execute();
+			
+			if (checkIsSuccessful && !response.isSuccessful()) {
 				throw new IOException("Unexpected code " + response);
 			}
 			
