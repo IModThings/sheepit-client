@@ -30,7 +30,7 @@ test:
   script:
     - ./gradlew check
 
-wrap-client:
+exe-wrap:
   stage: wrap
   image: debian:stable-slim
   variables:
@@ -52,3 +52,31 @@ wrap-client:
     paths:
       - ./sheepit-wrapper.exe
     expire_in: 1 week
+
+dmg-x64-wrap:
+    stage: wrap
+    image: debian:stable-slim
+    variables:
+        ARCH: "Intel-x64"
+        JRETAR: "OpenJDK11U-jre_x64_mac_hotspot_11.0.15_10.tar.gz"  # Taken from https://adoptium.net/releases.html?variant=openjdk11&jvmVariant=hotspot
+    script:
+        - dmg-wrapper/ci-build-dmg.sh $ARCH $JRETAR
+    artifacts:
+        name: "$CI_COMMIT_REF_NAME-sheepit-artifact-$ARCH-dmg"
+        paths:
+            - ./dmg-wrapper/SheepIt-$ARCH.dmg
+        expire_in: 1 week
+
+dmg-arm-wrap:
+    stage: wrap
+    image: debian:stable-slim
+    variables:
+        ARCH: "Apple-ARM"
+        JRETAR: "OpenJDK17U-jre_aarch64_mac_hotspot_17.0.2_8.tar.gz"  # Taken from https://adoptium.net/de/temurin/releases/?variant=openjdk17&jvmVariant=hotspot
+    script:
+        - dmg-wrapper/ci-build-dmg.sh $ARCH $JRETAR
+    artifacts:
+        name: "$CI_COMMIT_REF_NAME-sheepit-artifact-$ARCH-dmg"
+        paths:
+            - ./dmg-wrapper/SheepIt-$ARCH.dmg
+        expire_in: 1 week
