@@ -678,7 +678,7 @@ import okhttp3.HttpUrl;
 		}
 		
 		if (error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER
-				|| error == Type.RENDERER_KILLED_BY_USER_OVER_TIME || error == Error.Type.RENDERER_KILLED_BY_SERVER)) {
+				|| error == Type.RENDERER_KILLED_BY_USER_OVER_TIME || error == Error.Type.RENDERER_KILLED_BY_SERVER || error == Type.MISSING_SCENE)) {
 			// do nothing, we can ask for a job right away
 		}
 		else {
