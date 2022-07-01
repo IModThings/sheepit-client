@@ -13,6 +13,7 @@ FINAL="$APP-$ARCH.dmg"
 
 BASE="$(pwd)"
 BUILD="$BASE/build"
+SH_DIR="$BUILD/SheepIt.app/Contents/MacOS"
 RES="$BUILD/SheepIt.app/Contents/Resources"
 CL="$RES/client"
 
@@ -20,7 +21,7 @@ apt-get update
 apt-get install -y --no-install-recommends genisoimage  # Add dependencies
 
 mkdir "$BUILD"
-tar -axf "$APP.tar.gz" -C "$BUILD"  # Extract base file structure + Platypus shell exec shim
+tar -axf "$APP.tar.gz" -C "$BUILD"  # Extract base file structure
 tar -axf "$BASE/$JRETAR" -C "$RES"  # Extracts the JRE into Resources folder
 
 mkdir -p "$CL"
@@ -28,6 +29,8 @@ cp ../sheepit-client-all.jar "$CL/$APP.jar"  # Copy client artifact to be packag
 cp "$BASE/$APP-Run.sh" "$CL"
 cp "$BASE/$APP.png" "$CL"
 
+mkdir -p "$SH_DIR"
+cp "$BASE/$APP.sh" "$SH_DIR/$APP" # Shell exec shim
 cd "$CL"
 ln -s "$(find ../ -name java)" $APP  # We symlink java to make the title appearing in the dock to read "SheepIt", not "java"
 cd "$BASE"
