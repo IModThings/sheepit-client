@@ -61,6 +61,7 @@ public class Error {
 		PATH_INVALID(102),
 		NO_WRITE_PERMISSION(103),
 		SERVER_DOWN(104),
+		ERROR_BAD_SERVER_RESPONSE(105),
 		;
 		
 		private final int id;
@@ -161,6 +162,8 @@ public class Error {
 		switch (in) {
 			case ERROR_BAD_UPLOAD_RESPONSE:
 				return "Corrupt response from the server when trying to upload data. The server might be overloaded or be encountering other issues. Will try again in a few minutes.";
+			case ERROR_BAD_SERVER_RESPONSE:
+				return "Unexpected response from server received. The server might be overloaded or encountering other issues.";
 			case NETWORK_ISSUE:
 				return "Could not connect to the server, please check your connection to the internet.";
 			case SERVER_DOWN:
