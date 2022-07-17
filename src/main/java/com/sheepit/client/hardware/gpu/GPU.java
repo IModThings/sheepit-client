@@ -23,8 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.sheepit.client.Configuration;
+import com.sheepit.client.hardware.gpu.hip.HIP;
 import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
-import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.os.OS;
 import com.sheepit.client.os.Windows;
 
@@ -39,8 +39,9 @@ public class GPU {
 		}
 		
 		OS os = OS.getOS();
-		if (os instanceof Windows) { // opencl detection will crash on Mac (and sometimes on Linux) 
-			gpus = new OpenCL().getGpus();
+		if (os instanceof Windows) { // for now we only allow AMD on Windows
+			
+			gpus = new HIP().getGpus();
 			if (gpus != null) {
 				devices.addAll(gpus);
 			}

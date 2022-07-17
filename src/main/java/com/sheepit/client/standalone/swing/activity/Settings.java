@@ -63,8 +63,8 @@ import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.hardware.gpu.GPULister;
+import com.sheepit.client.hardware.gpu.hip.HIP;
 import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
-import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.network.Proxy;
 import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
@@ -293,11 +293,11 @@ public class Settings implements Activity {
 			if ((config.getComputeMethod() == ComputeType.GPU || config.getComputeMethod() == ComputeType.CPU_GPU) && config.getGPUDevice() != null) {
 				GPULister gpu;
 				
-				if (config.getGPUDevice().getType().equals("CUDA")) {
+				if (config.getGPUDevice().getType().equals(Nvidia.TYPE)) {
 					gpu = new Nvidia();
 				}
-				else if (config.getGPUDevice().getType().equals("OPENCL")) {
-					gpu = new OpenCL();
+				else if (config.getGPUDevice().getType().equals(HIP.TYPE)) {
+					gpu = new HIP();
 				}
 			}
 			
@@ -606,11 +606,11 @@ public class Settings implements Activity {
 				}
 				else {
 					GPULister gpu;
-					if (useGPUs.get(counter).getGPUDevice().getType().equals("CUDA")) {
+					if (useGPUs.get(counter).getGPUDevice().getType().equals(Nvidia.TYPE)) {
 						gpu = new Nvidia();
 					}
-					else if (useGPUs.get(counter).getGPUDevice().getType().equals("OPENCL")) {
-						gpu = new OpenCL();
+					else if (useGPUs.get(counter).getGPUDevice().getType().equals(HIP.TYPE)) {
+						gpu = new HIP();
 					}
 				}
 				

@@ -19,9 +19,6 @@
 
 package com.sheepit.client.hardware.gpu;
 
-import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
-import com.sheepit.client.hardware.gpu.opencl.OpenCL;
-
 public class GPUDevice {
 	private String type;
 	private String model;
