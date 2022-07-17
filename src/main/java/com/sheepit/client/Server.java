@@ -641,6 +641,9 @@ public class Server extends Thread {
 				this.log.error(response.body().string());
 				return ServerCode.JOB_VALIDATION_IMAGE_TOO_LARGE;
 			}
+			else if (r == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+				return ServerCode.ERROR_BAD_RESPONSE;
+			}
 			else {
 				this.log.error(String.format("Server::HTTPSendFile Unknown response received from server: %s", response.body().string()));
 			}
