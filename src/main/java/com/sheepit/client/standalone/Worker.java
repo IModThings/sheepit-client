@@ -19,6 +19,7 @@
 
 package com.sheepit.client.standalone;
 
+import com.sheepit.client.hardware.gpu.hip.HIP;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -51,7 +52,6 @@ import com.sheepit.client.Utils;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
-import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.network.Proxy;
 import com.sheepit.client.os.OS;
 
@@ -194,8 +194,8 @@ public class Worker {
 		config.setHeadless(headless);
 		
 		if (gpu_device != null) {
-			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
-				System.err.println("ERROR: The entered GPU_ID is invalid. The GPU_ID should look like '" + Nvidia.TYPE + "_#' or '" + OpenCL.TYPE
+			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(HIP.TYPE) == false) {
+				System.err.println("ERROR: The entered GPU_ID is invalid. The GPU_ID should look like '" + Nvidia.TYPE + "_#' or '" + HIP.TYPE
 						+ "_#'. Please use the proper GPU_ID from the GPU list below\n");
 				showGPUList(parser);
 			}
