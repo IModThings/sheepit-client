@@ -79,13 +79,21 @@ public class Windows extends OS {
 	
 	@Override public boolean isSupported() {
 		long buildNumber = Long.MIN_VALUE;
+		String arch = System.getProperty("os.arch").toLowerCase();
 		try {
 			buildNumber = Long.parseLong(operatingSystem.getVersionInfo().getBuildNumber());
 		}
 		catch(NumberFormatException e) {
 			System.err.println("Windows::isSupported Failed to extract Windows build number: " + e);
 		}
-		return super.isSupported() && buildNumber >= MINIMUM_SUPPORTED_BUILD;
+		return
+			super.isSupported() &&
+			buildNumber >= MINIMUM_SUPPORTED_BUILD &&
+			(
+				"amd64".equals(arch) ||
+				"x64".equals(arch) ||
+				"x86_64".equals(arch)
+			);
 	}
 	
 	int getPriorityClass(int priority) {
