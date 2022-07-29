@@ -89,6 +89,7 @@ public class Error {
 		JOB_REQUEST_ERROR_NO_RENDERING_RIGHT(201),
 		JOB_REQUEST_ERROR_DEAD_SESSION(202),
 		JOB_REQUEST_ERROR_SESSION_DISABLED(203),
+		JOB_REQUEST_ERROR_SESSION_DISABLED_DENOISING_NOT_SUPPORTED(208),
 		JOB_REQUEST_ERROR_INTERNAL_ERROR(204),
 		JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE(205),
 		JOB_REQUEST_SERVER_IN_MAINTENANCE(206),
@@ -207,7 +208,7 @@ public class Error {
 			case CPU_NOT_SUPPORTED:
 				return "This CPU is not supported.";
 			case DENOISING_NOT_SUPPORTED:
-				return "Denoising is not supported on this device.";
+				return "Denoising is not supported on this device. Session can not continue. Please use CPU or Virtual Machine with SSE4.1 instruction set.";
 			case ENGINE_NOT_AVAILABLE:
 				return "The project requires a rendering engine that isn't supported on this machine. Will try another project in a few minutes.";
 			case NO_SPACE_LEFT_ON_DEVICE:

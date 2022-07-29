@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import com.sheepit.client.datamodel.SpeedTestTarget;
 import com.sheepit.client.datamodel.SpeedTestResult;
 import com.sheepit.client.datamodel.SpeedTestTargetResult;
+import com.sheepit.client.exception.FermeExceptionSessionDisabledDenoisingNotSupported;
 import com.sheepit.client.hardware.hwid.HWIdentifier;
 import com.sheepit.client.os.Windows;
 import lombok.Getter;
@@ -379,6 +380,8 @@ public class Server extends Thread {
 						throw new FermeExceptionNoSession();
 					case JOB_REQUEST_ERROR_SESSION_DISABLED:
 						throw new FermeExceptionSessionDisabled();
+					case JOB_REQUEST_ERROR_SESSION_DISABLED_DENOISING_NOT_SUPPORTED:
+						throw new FermeExceptionSessionDisabledDenoisingNotSupported();
 					case JOB_REQUEST_ERROR_INTERNAL_ERROR:
 						throw new FermeExceptionBadResponseFromServer();
 					case JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE:

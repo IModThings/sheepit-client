@@ -57,6 +57,7 @@ import com.sheepit.client.exception.FermeExceptionNoWritePermission;
 import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
 import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
+import com.sheepit.client.exception.FermeExceptionSessionDisabledDenoisingNotSupported;
 import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.os.OS;
@@ -223,6 +224,17 @@ import okhttp3.HttpUrl;
 					}
 					catch (FermeExceptionSessionDisabled e) {
 						this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
+						// should wait forever to actually display the message to the user
+						while (shuttingdown == false) {
+							try {
+								Thread.sleep(1000);
+							}
+							catch (InterruptedException e1) {
+							}
+						}
+					}
+					catch (FermeExceptionSessionDisabledDenoisingNotSupported e) {
+						this.gui.error(Error.humanString(Error.Type.DENOISING_NOT_SUPPORTED));
 						// should wait forever to actually display the message to the user
 						while (shuttingdown == false) {
 							try {
