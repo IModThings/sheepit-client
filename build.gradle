@@ -22,19 +22,19 @@ repositories {
 }
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok:1.18.22'
-	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
 	implementation 'args4j:args4j:2.33'
-	implementation 'net.lingala.zip4j:zip4j:2.9.1'
-	implementation 'net.java.dev.jna:jna-platform:5.9.0'
-	implementation 'com.github.oshi:oshi-core:6.1.2'
+	implementation 'net.lingala.zip4j:zip4j:2.10.0'
+	implementation 'net.java.dev.jna:jna-platform:5.11.0'
+	implementation 'com.github.oshi:oshi-core:6.1.6'
 	implementation 'org.simpleframework:simple-xml:2.7.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
-	implementation 'com.formdev:flatlaf:2.0.1'
-	implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-	implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.9.3'
-	implementation 'org.slf4j:slf4j-nop:1.7.35'
+	implementation 'com.formdev:flatlaf:2.3'
+	implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+	implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.10.0'
+	implementation 'org.slf4j:slf4j-nop:1.7.36'
 }
 
 jar {
