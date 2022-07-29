@@ -94,6 +94,17 @@ public class Linux extends OS {
 		return builder.start();
 	}
 	
+	@Override public boolean isSupported() {
+		String arch = System.getProperty("os.arch").toLowerCase();
+		return
+			super.isSupported() &&
+			(
+				"amd64".equals(arch) ||
+				"x64".equals(arch) ||
+				"x86_64".equals(arch)
+			);
+	}
+	
 	@Override public boolean getSupportHighPriority() {
 		try {
 			ProcessBuilder builder = new ProcessBuilder();
