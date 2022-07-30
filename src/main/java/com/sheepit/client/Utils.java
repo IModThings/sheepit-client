@@ -234,6 +234,10 @@ public class Utils {
 			mimeType = "image/tga";
 		}
 
+		if (mimeType == null && file.endsWith(".exr")) { // fallback for EXR
+			mimeType = "image/x-exr";
+		}
+
 		return mimeType;
 	}
 	
