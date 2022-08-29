@@ -26,7 +26,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,7 +75,7 @@ public class Utils {
 			byte[] buffer = new byte[8192];
 			while (dis.read(buffer) > 0)
 				; // process the entire file
-			String data = DatatypeConverter.printHexBinary(md.digest()).toLowerCase();
+			String data = convertBinaryToHex(md.digest());
 			dis.close();
 			is.close();
 			return data;
@@ -84,6 +83,17 @@ public class Utils {
 		catch (NoSuchAlgorithmException | IOException e) {
 			return "";
 		}
+	}
+	
+	public static String convertBinaryToHex(byte[] bytes) {
+		StringBuilder hexStringBuilder = new StringBuilder();
+		for (byte aByte : bytes) {
+			char[] hex = new char[2];
+			hex[0] = Character.forDigit((aByte >> 4) & 0xF, 16);
+			hex[1] = Character.forDigit((aByte & 0xF), 16);
+			hexStringBuilder.append(new String(hex));
+		}
+		return hexStringBuilder.toString();
 	}
 	
 	public static double lastModificationTime(File directory_) {
