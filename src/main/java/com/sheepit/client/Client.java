@@ -1102,12 +1102,16 @@ import okhttp3.HttpUrl;
 					// the client cannot recover from this error (it's server side config) so exit the retry loop
 					confirmJobReturnCode = Type.IMAGE_TOO_LARGE;
 					break retryLoop;
+					
+				case SERVER_CONNECTION_FAILED:
+					confirmJobReturnCode = Type.NETWORK_ISSUE;
+					break;
 				
 				case ERROR_BAD_RESPONSE:
 					// set the error and retry on next loop
 					confirmJobReturnCode = Type.ERROR_BAD_UPLOAD_RESPONSE;
 					break;
-				
+					
 				default:
 					// do nothing, try to do a request on the next loop
 					break;

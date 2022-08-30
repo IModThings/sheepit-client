@@ -109,6 +109,7 @@ public class Error {
 		ERROR_NO_ROOT(2),
 		ERROR_BAD_RESPONSE(3),
 		ERROR_REQUEST_FAILED(5),
+		SERVER_CONNECTION_FAILED(6),
 		;
 		
 		private final int id;
