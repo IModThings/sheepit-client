@@ -650,6 +650,13 @@ public class Server extends Thread {
 			
 			return ServerCode.UNKNOWN;
 		}
+		catch (ConnectException e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.error(checkpoint, String.format("Server::HTTPSendFile Error in upload process. Exception %s stacktrace ", e.getMessage()) + sw.toString());
+			return ServerCode.SERVER_CONNECTION_FAILED;
+		}
 		catch (IOException e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
