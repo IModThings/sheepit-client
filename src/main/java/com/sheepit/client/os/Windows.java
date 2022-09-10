@@ -86,6 +86,12 @@ public class Windows extends OS {
 		catch(NumberFormatException e) {
 			System.err.println("Windows::isSupported Failed to extract Windows build number: " + e);
 		}
+		catch (NullPointerException e) {
+			System.err.println("Windows::isSupported Failed to extract Windows build number: " + e);
+			String ver = operatingSystem.getVersionInfo().getVersion();
+			List<String> supportedVersions = List.of("8.1", "10", "11", "Server 2016", "Server 2012 R2", "Server 2019", "Server 2022");
+			return super.isSupported() && supportedVersions.contains(ver);
+		}
 		return
 			super.isSupported() &&
 			buildNumber >= MINIMUM_SUPPORTED_BUILD &&
