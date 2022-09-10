@@ -60,6 +60,7 @@ import com.sheepit.client.exception.FermeExceptionSessionDisabled;
 import com.sheepit.client.exception.FermeExceptionSessionDisabledDenoisingNotSupported;
 import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.hardware.cpu.CPU;
+import com.sheepit.client.hardware.hwid.HWIdentifier;
 import com.sheepit.client.os.OS;
 
 import lombok.AllArgsConstructor;
@@ -164,7 +165,14 @@ import okhttp3.HttpUrl;
 					}
 				}, this.configuration.getShutdownTime());
 			}
-
+			
+			//send "error" log containing config
+			step = log.newCheckPoint();
+			this.log.info("HWID: " + new HWIdentifier(log).getHardwareHash());
+			this.log.info("OS: " + OS.getOS().getVersion() + " " + System.getProperty("os.arch"));
+			this.log.info(configuration.toString());
+			sendError(step, null, Type.OK);
+			
 			// Check integrity of all files in the working directories
 			this.configuration.cleanWorkingDirectory();
 
