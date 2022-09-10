@@ -115,7 +115,35 @@ import lombok.Data;
 	}
 	
 	public String toString() {
-		return String.format("Configuration (workingDirectory '%s')", this.workingDirectory.getAbsolutePath());
+		String c = "    CFG: ", n ="\n";
+		return
+			c + "configFilePath:            " + configFilePath + n +
+				c + "workingDirectory:          " + workingDirectory + n +
+				c + "sharedDownloadsDirectory:  " + sharedDownloadsDirectory + n +
+				c + "storageDirectory:          " + storageDirectory + n +
+				c + "userHasSpecifiedACacheDir: " + userHasSpecifiedACacheDir + n +
+				c + "static_exeDirName:         " + static_exeDirName + n +
+				c + "login:                     " + login + n +
+				c + "proxy:                     " + proxy + n +
+				c + "maxUploadingJob:           " + maxUploadingJob + n +
+				c + "nbCores:                   " + nbCores + n +
+				c + "maxAllowedMemory:          " + maxAllowedMemory + n +
+				c + "maxRenderTime:             " + maxRenderTime + n +
+				c + "priority:                  " + priority + n +
+				c + "computeMethod:             " + computeMethod + n +
+				c + "GPUDevice:                 " + GPUDevice + n +
+				c + "detectGPUs:                " + detectGPUs + n +
+				c + "printLog:                  " + printLog + n +
+				c + "requestTime:               " + requestTime + n +
+				c + "shutdownTime:              " + shutdownTime + n +
+				c + "shutdownMode:              " + shutdownMode + n +
+				c + "extras:                    " + extras + n +
+				c + "autoSignIn:                " + autoSignIn + n +
+				c + "useSysTray:                " + useSysTray + n +
+				c + "headless:                  " + headless + n +
+				c + "UIType:                    " + UIType + n +
+				c + "hostname:                  " + hostname + n +
+				c + "theme:                     " + theme;
 	}
 	
 	public void setUsePriority(int priority) {
