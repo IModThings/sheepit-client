@@ -221,9 +221,6 @@ import java.util.regex.Pattern;
 		new_env.put("BLENDER_SYSTEM_SCRIPTS", "");
 		new_env.put("BLENDER_USER_DATAFILES", "");
 		new_env.put("BLENDER_SYSTEM_DATAFILES", "");
-		new_env.put("BLENDER_SYSTEM_PYTHON", "");
-		new_env.put("PYTHONPATH", ""); // make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
-		new_env.put("PYTHONHOME", "");// make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
 		new_env.put("OCIO", ""); //prevent blender from loading a non-standard color configuration
 		
 		for (String arg : command1) {
