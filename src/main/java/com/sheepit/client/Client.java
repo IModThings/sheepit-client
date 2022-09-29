@@ -83,6 +83,7 @@ import okhttp3.HttpUrl;
 	
 	private boolean disableErrorSending;
 	private boolean running;
+	private boolean awaitingStop;
 	private boolean suspended;
 	private boolean shuttingdown;
 	
@@ -104,6 +105,7 @@ import okhttp3.HttpUrl;
 		
 		this.disableErrorSending = false;
 		this.running = false;
+		this.awaitingStop = false;
 		this.suspended = false;
 		this.shuttingdown = false;
 		
@@ -574,11 +576,13 @@ import okhttp3.HttpUrl;
 	public void askForStop() {
 		this.log.debug("Client::askForStop");
 		this.running = false;
+		this.awaitingStop = true;
 	}
 	
 	public void cancelStop() {
 		this.log.debug("Client::cancelStop");
 		this.running = true;
+		this.awaitingStop = false;
 	}
 	
 	public int senderLoop() {

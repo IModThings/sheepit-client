@@ -26,17 +26,21 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.Image;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -56,6 +60,8 @@ import com.sheepit.client.standalone.GuiSwing.ActivityType;
 import com.sheepit.client.standalone.swing.components.CollapsibleJPanel;
 
 public class Working implements Activity {
+	public static final String ACTION_CLOSE_WINDOW = "Invoked close action by pressing x";
+	
 	private GuiSwing parent;
 	
 	private CollapsibleJPanel session_info_panel;
@@ -109,6 +115,19 @@ public class Working implements Activity {
 		currentTheme = UIManager.getLookAndFeel().getName();    // Capture the theme on component instantiation
 		previousStatus = "";
 		log = Log.getInstance(parent_.getConfiguration());
+		
+		//Overwrite the window close button behaviour to showa dialogue
+		parent.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		parent.addWindowListener(new WindowAdapter() {
+			@Override public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				if (parent == null || parent.getClient().isRunning() == false) {
+					System.exit(0);
+				}
+				var exitAction = new ExitAfterAction();
+				exitAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, ACTION_CLOSE_WINDOW));
+			}
+		});
 	}
 	
 	@Override public void show() {
@@ -252,7 +271,11 @@ public class Working implements Activity {
 		blockJob.addActionListener(new blockJobAction());
 		
 		exitAfterFrame = new JButton("Exit");
-		exitAfterFrame.addActionListener(new ExitAfterAction());
+		ExitAfterAction exitAfterAction = new ExitAfterAction();
+		exitAfterFrame.addActionListener(exitAfterAction);
+		if (client != null && client.isAwaitingStop()) {
+			exitAfterAction.finishJobBeforeExit(client, getJobsQueueSize(client));
+		}
 		
 		buttonsPanel.add(settingsButton);
 		buttonsPanel.add(pauseButton);
@@ -485,6 +508,10 @@ public class Working implements Activity {
 		return layout.getConstraints(c);
 	}
 	
+	private int getJobsQueueSize(Client client) {
+		return client.getUploadQueueSize() + (client.isRunning() ? 1 : 0);
+	}
+	
 	class PauseAction implements ActionListener {
 		
 		@Override public void actionPerformed(ActionEvent e) {
@@ -516,32 +543,46 @@ public class Working implements Activity {
 		@Override public void actionPerformed(ActionEvent e) {
 			Client client = parent.getClient();
 			if (client != null) {
-				if (client.isRunning()) {
-					String[] exitJobOptions = { "Exit after current Jobs", "Exit Immediately", "Do Nothing" };
-					int jobsQueueSize = client.getUploadQueueSize() + (client.isRunning() ? 1 : 0);
-					
-					int userDecision = JOptionPane.showOptionDialog(null, String.format(
-							"<html>You have <strong>%d frame%s</strong> being uploaded or rendered. Do you want to finish the jobs or exit now?.\n\n",
-							jobsQueueSize,   // Add the current frame to the total count ONLY if the client is running
-							(jobsQueueSize > 1 ? "s" : ""), (jobsQueueSize > 1 ? (jobsQueueSize + " ") : ""), (jobsQueueSize > 1 ? "s" : "")),
-							"Exit Now or Later", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, exitJobOptions,
-							exitJobOptions[2]);    // Make the "Do nothing" button the default one to avoid mistakes
-					
-					if (userDecision == 0) {
-						exitAfterFrame.setText(String.format("Cancel exit (%s frame%s to go)", jobsQueueSize, (jobsQueueSize > 1 ? "s" : "")));
-						
-						client.askForStop();
-					}
-					else if (userDecision == 1) {
-						client.stop();
-						System.exit(0);
-					}
+				if (client.isRunning() == false && Objects.equals(e.getActionCommand(), ACTION_CLOSE_WINDOW) == false) {
+					cancelExit(client);
+					return;
 				}
-				else {
-					exitAfterFrame.setText("Exit");
-					client.cancelStop();
+				
+				int jobsQueueSize = getJobsQueueSize(client);
+				int userDecision = showCloseDialog(jobsQueueSize);
+				
+				if (userDecision == 0) {
+					finishJobBeforeExit(client, jobsQueueSize);
+				}
+				else if (userDecision == 1) {
+					exitImmediately(client);
 				}
 			}
+		}
+		
+		public int showCloseDialog(int jobsQueueSize) {
+			String[] exitJobOptions = { "Exit after current Jobs", "Exit Immediately", "Do Nothing" };
+			return JOptionPane.showOptionDialog(null, String.format(
+					"<html>You have <strong>%d frame%s</strong> being uploaded or rendered. Do you want to finish the jobs or exit now?.\n\n",
+					jobsQueueSize,   // Add the current frame to the total count ONLY if the client is running
+					(jobsQueueSize > 1 ? "s" : ""), (jobsQueueSize > 1 ? (jobsQueueSize + " ") : ""), (jobsQueueSize > 1 ? "s" : "")),
+				"Exit Now or Later", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, exitJobOptions,
+				exitJobOptions[2]);    // Make the "Do nothing" button the default one to avoid mistakes
+		}
+		
+		public void finishJobBeforeExit(Client client, int jobsQueueSize) {
+			exitAfterFrame.setText(String.format("Cancel exit (%s frame%s to go)", jobsQueueSize, (jobsQueueSize > 1 ? "s" : "")));
+			client.askForStop();
+		}
+		
+		public void exitImmediately(Client client) {
+			client.stop();
+			System.exit(0);
+		}
+		
+		public void cancelExit(Client client) {
+			exitAfterFrame.setText("Exit");
+			client.cancelStop();
 		}
 	}
 	
