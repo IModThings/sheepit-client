@@ -418,8 +418,10 @@ public class Working implements Activity {
 					lastRender.setIcon(icon);
 					// don't use lastJob.getProcessRender().getDuration() due to timezone
 					if (lastJob.getProcessRender().getDuration() > 1) {
-						lastRenderTime.setText("Render time : " + Utils
-								.humanDuration(new Date(lastJob.getProcessRender().getEndTime() - lastJob.getProcessRender().getStartTime())));
+						lastRenderTime.setText(
+							"Total time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getEndTime() - lastJob.getProcessRender().getStartTime()))
+								+ "; Render time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getRenderDuration() * 1000L))
+						);
 					}
 				}
 			}

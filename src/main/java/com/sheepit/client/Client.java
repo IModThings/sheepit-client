@@ -683,7 +683,7 @@ import okhttp3.HttpUrl;
 			if (job_to_reset_ != null) {
 				remoteURL.addQueryParameter("frame", job_to_reset_.getFrameNumber());
 				remoteURL.addQueryParameter("job", job_to_reset_.getId());
-				remoteURL.addQueryParameter("render_time", Integer.toString(job_to_reset_.getProcessRender().getDuration()));
+				remoteURL.addQueryParameter("render_time", Integer.toString(job_to_reset_.getProcessRender().getRenderDuration()));
 				remoteURL.addQueryParameter("memoryused", Long.toString(job_to_reset_.getProcessRender().getPeakMemoryUsed()));
 			}
 			this.server.HTTPSendFile(remoteURL.build().toString(), temp_file.getAbsolutePath(), step_, this.gui);
@@ -1062,7 +1062,7 @@ import okhttp3.HttpUrl;
 	}
 
 	protected Error.Type confirmJob(Job ajob, int checkpoint) {
-		String url_real = String.format(LOCALE, "%s&rendertime=%d&memoryused=%s", ajob.getValidationUrl(), ajob.getProcessRender().getDuration(),
+		String url_real = String.format(LOCALE, "%s&rendertime=%d&memoryused=%s", ajob.getValidationUrl(), ajob.getProcessRender().getRenderDuration(),
 				ajob.getProcessRender().getPeakMemoryUsed());
 		this.log.debug(checkpoint, "Client::confirmeJob url " + url_real);
 		this.log.debug(checkpoint, "path frame " + ajob.getOutputImagePath());

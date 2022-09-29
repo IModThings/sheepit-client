@@ -24,6 +24,7 @@ import com.sheepit.client.Error.Type;
 import com.sheepit.client.os.OS;
 import lombok.Data;
 import lombok.Getter;
+import org.simpleframework.xml.util.Match;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,6 +37,8 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -309,11 +312,19 @@ import java.util.regex.Pattern;
 				}, configuration.getMaxRenderTime() * 1000 + 2000); // +2s to be sure the delay is over
 			}
 			
+			
 			log.debug("renderer output");
 			try {
 				int progress = -1;
 				
 				Pattern progressPattern = Pattern.compile(" (Rendered|Path Tracing Tile|Rendering|Sample) (\\d+)\\s?\\/\\s?(\\d+)( Tiles| samples|,)*");
+				Pattern beginScenePrepPattern = Pattern.compile("Read blend:");
+				Pattern beginPostProcessingPattern = Pattern.compile("^Fra:\\d* \\w*(.)* \\| (Compositing|Denoising)");
+				Instant timeStamp = null;
+				Duration phaseDuration;	//We divide the job into 3 phases: preparation, rendering, compositing
+				boolean scenePrepStarted = false;
+				boolean renderingStarted = false;
+				boolean postProcessingStarted = false;
 				
 				// Initialise the progress bar in the icon and the UI (0% completed at this time)
 				gui.updateTrayIcon(0);
@@ -333,12 +344,46 @@ import java.util.regex.Pattern;
 						}
 					}
 					
+					Matcher scenePrepDetector = beginScenePrepPattern.matcher(line);
+					if (scenePrepStarted == false && scenePrepDetector.find()) {
+						scenePrepStarted = true;
+						timeStamp = Instant.now();
+					}
+					
 					progress = computeRenderingProgress(line, progressPattern, progress);
+					if (renderingStarted == false && progress != -1) {
+						renderingStarted = true;
+						if (timeStamp == null) {
+							timeStamp = new Date(process.getStartTime()).toInstant();
+						}
+						phaseDuration = Duration.between(timeStamp, Instant.now());
+						timeStamp = Instant.now();
+						process.setScenePrepDuration((int) phaseDuration.toSeconds());
+					}
+					
+					Matcher postProcessingDetector = beginPostProcessingPattern.matcher(line);
+					if (postProcessingStarted == false && postProcessingDetector.find()) {
+						postProcessingStarted = true;
+						if (timeStamp == null) {
+							timeStamp = new Date(process.getStartTime()).toInstant();
+						}
+						phaseDuration = Duration.between(timeStamp, Instant.now());
+						timeStamp = Instant.now();
+						process.setRenderDuration((int) phaseDuration.toSeconds());
+					}
+					
 					if (configuration.getMaxAllowedMemory() != -1 && getProcessRender().getMemoryUsed().get() > configuration.getMaxAllowedMemory()) {
 						log.debug("Blocking render because process ram used (" + getProcessRender().getMemoryUsed().get() + "k) is over user setting (" + configuration
 								.getMaxAllowedMemory() + "k)");
 						OS.getOS().kill(process.getProcess());
 						process.finish();
+						if (process.getRenderDuration() == -1) {
+							if (timeStamp == null) {
+								timeStamp = new Date(process.getStartTime()).toInstant();
+							}
+							phaseDuration = Duration.between(timeStamp, Instant.now());
+							process.setRenderDuration((int) phaseDuration.toSeconds());
+						}
 						if (script_file != null) {
 							script_file.delete();
 						}
@@ -357,6 +402,14 @@ import java.util.regex.Pattern;
 							script_file.delete();
 						}
 						
+						if (process.getRenderDuration() == -1) {
+							if (timeStamp == null) {
+								timeStamp = new Date(process.getStartTime()).toInstant();
+							}
+							phaseDuration = Duration.between(timeStamp, Instant.now());
+							process.setRenderDuration((int) phaseDuration.toSeconds());
+						}
+						
 						// Put back base icon
 						gui.updateTrayIcon(Job.SHOW_BASE_ICON);
 						
@@ -367,7 +420,27 @@ import java.util.regex.Pattern;
 						event.doNotifyIsStarted();
 					}
 				}
+				
+				if (timeStamp == null) {
+					timeStamp = new Date(process.getStartTime()).toInstant();
+				}
+				if (postProcessingStarted == false) {
+					phaseDuration = Duration.between(timeStamp, Instant.now());
+					process.setRenderDuration((int) phaseDuration.toSeconds());
+				}
+				else {
+					phaseDuration = Duration.between(timeStamp, Instant.now());
+					process.setPostProcessingDuration((int) phaseDuration.toSeconds());
+				}
 				input.close();
+				
+				log.debug(String.format("render times: %n\tScene prep: %ds%n\tRendering: %ss%n\tPost: %ss%n\tTotal: %ds%n\tRendering/Total: %.03f%n",
+					process.getScenePrepDuration(),
+					process.getRenderDuration(),
+					process.getPostProcessingDuration(),
+					process.getDuration(),
+					(Math.max(process.getRenderDuration(), 0) * 100.0) / process.getDuration()
+				));
 			}
 			catch (IOException err1) { // for the input.readline
 				// most likely The handle is invalid
@@ -470,7 +543,12 @@ import java.util.regex.Pattern;
 			scene_dir.delete();
 		}
 		
-		gui.status(String.format("Frame rendered in %dmin%ds", process.getDuration() / 60, process.getDuration() % 60));
+		gui.status(String.format("Frame finished in %dmin%ds, render time: %dmin%ds",
+			process.getDuration() / 60,
+			process.getDuration() % 60,
+			process.getRenderDuration() / 60,
+			process.getRenderDuration() % 60)
+		);
 		
 		return Error.Type.OK;
 	}
