@@ -23,11 +23,20 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
+
+import lombok.Setter;
 import oshi.software.os.OSProcess;
 
 @Data public class RenderProcess {
 	private long startTime;
 	private long endTime;
+	
+	@Setter
+	private int scenePrepDuration;
+	@Setter
+	private int renderDuration;
+	@Setter
+	private int postProcessingDuration;
 	private int remainingDuration; // in seconds
 	private AtomicLong memoryUsed; // in kB
 	private long peakMemoryUsed; // in kB
@@ -41,6 +50,9 @@ import oshi.software.os.OSProcess;
 		osProcess = null;
 		startTime = -1;
 		endTime = -1;
+		scenePrepDuration = -1;
+		renderDuration = -1;
+		postProcessingDuration = -1;
 		memoryUsed = new AtomicLong(0);
 		peakMemoryUsed = 0;
 		coresUsed = 0;
