@@ -701,7 +701,7 @@ import okhttp3.HttpUrl;
 			// no exception should be raised to actual launcher (applet or standalone)
 		}
 		
-		if (error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER
+		if (error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER || error == Type.OK
 				|| error == Type.RENDERER_KILLED_BY_USER_OVER_TIME || error == Error.Type.RENDERER_KILLED_BY_SERVER || error == Type.MISSING_SCENE)) {
 			// do nothing, we can ask for a job right away
 		}
