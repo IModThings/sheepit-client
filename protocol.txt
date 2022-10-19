@@ -195,6 +195,7 @@ Parameter as GET or POST:
     * frame: Frame number of the rendering job
     * rendertime: current render time (optional)
     * remainingtime: current remaining time to render the frame (optional)
+    * paused: whether the client is actively paused or not
 
 Answer:
 <?xml version="1.0" encoding="utf-8" ?>
