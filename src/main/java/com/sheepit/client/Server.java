@@ -126,6 +126,7 @@ public class Server extends Thread {
 			if ((current_time - this.lastRequestTime) > this.keepmealive_duration) {
 				try {
 					HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(this.getPage("keepmealive"))).newBuilder();
+					urlBuilder.addQueryParameter("paused", String.valueOf(this.client.isSuspended()));
 					
 					if (this.client != null && this.client.getRenderingJob() != null) {
 						Job job = this.client.getRenderingJob();
