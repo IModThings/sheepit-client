@@ -73,7 +73,7 @@ public class HIP implements GPULister {
 		}
 		String driverVersion = "";
 		for (var gpu : gpus) {
-			if (gpu.getName().contains("AMD ")) {
+			if (gpu.getName().contains("AMD ") || gpu.getName().contains("Radeon ")) {
 				driverVersion = gpu.getVersionInfo();
 				break;
 			}
@@ -171,28 +171,27 @@ public class HIP implements GPULister {
 			System.out.println("HIP::getGpus failed(C) generic exception " + e);
 			return null;
 		}
-		
+
 		List<GPUDevice> gpuDevices = new ArrayList<>();
-		
+
 		int numberOfDevices = getNumberOfDevices();
 		if (numberOfDevices < 1) {
 			return null;
 		}
 		
 		//check that the driver is capable
-		long driverVersionAsLong = -1;
 		String driverVersion = "";
 		try {
 			driverVersion = getDriverVersion();
 			if (driverVersion == null) {
 				return null;
 			}
+
+			boolean driverTooOld = compareVersions(driverVersion, MINIMAL_WINDOWS_DRIVER_VERSION) < 0;
 			
-			driverVersionAsLong = Long.parseLong(driverVersion.replace(".", ""));
-			long minimumVersionAsLong = Long.parseLong(MINIMAL_WINDOWS_DRIVER_VERSION.replace(".",""));
-			
-			if (driverVersionAsLong < minimumVersionAsLong) {
+			if (driverTooOld) {
 				System.out.println("HIP::getGpus AMD driver too old");
+				System.out.println("Driver version: " + driverVersion);
 				return null;
 			}
 		}
@@ -213,5 +212,24 @@ public class HIP implements GPULister {
 		}
 		
 		return gpuDevices;
+	}
+	
+	private int compareVersions(String version1, String version2) {
+		int comparisonResult = 0;
+		
+		String[] version1Splits = version1.split("\\.");
+		String[] version2Splits = version2.split("\\.");
+		int maxLengthOfVersionSplits = Math.max(version1Splits.length, version2Splits.length);
+		
+		for (int i = 0; i < maxLengthOfVersionSplits; i++){
+			Integer v1 = i < version1Splits.length ? Integer.parseInt(version1Splits[i]) : 0;
+			Integer v2 = i < version2Splits.length ? Integer.parseInt(version2Splits[i]) : 0;
+			int compare = v1.compareTo(v2);
+			if (compare != 0) {
+				comparisonResult = compare;
+				break;
+			}
+		}
+		return comparisonResult;
 	}
 }
