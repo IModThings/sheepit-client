@@ -442,8 +442,7 @@ public class Working implements Activity {
 					// don't use lastJob.getProcessRender().getDuration() due to timezone
 					if (lastJob.getProcessRender().getDuration() > 1) {
 						lastRenderTime.setText(
-							"Total time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getEndTime() - lastJob.getProcessRender().getStartTime()))
-								+ "; Render time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getRenderDuration() * 1000L))
+							"Render time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getRenderDuration() * 1000L))
 						);
 					}
 				}
