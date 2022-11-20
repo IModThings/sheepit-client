@@ -813,7 +813,9 @@ import okhttp3.HttpUrl;
 			@Override public void update(Observable observable, Object o) {
 				// only remove the .blend since it's most important data
 				// and it's the only file we are sure will not be needed anymore
-				scene_file.delete();
+				// scene_file.delete();
+				Utils.move(scene_file, configuration.getArchiveDir().getPath() + File.separator + ajob.getSceneMD5());
+
 			}
 		};
 		
@@ -973,7 +975,7 @@ import okhttp3.HttpUrl;
 	}
 	
 	protected void removeSceneDirectory(Job ajob) {
-		Utils.delete(new File(ajob.getSceneDirectory()));
+		//Utils.delete(new File(ajob.getSceneDirectory()));
 	}
 	
 	protected int prepareWorkingDirectory(Job ajob) {
@@ -1140,7 +1142,8 @@ import okhttp3.HttpUrl;
 		
 		// we can remove the frame file
 		File frame = new File(ajob.getOutputImagePath());
-		frame.delete();
+		// frame.delete();
+		Utils.move(frame, configuration.getArchiveDir().getPath() + File.separator + ajob.getSceneMD5());
 		ajob.setOutputImagePath(null);
 		
 		return confirmJobReturnCode;

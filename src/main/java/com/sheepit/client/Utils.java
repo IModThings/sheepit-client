@@ -19,13 +19,6 @@
 
 package com.sheepit.client;
 
-import com.sheepit.client.Error.ServerCode;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +29,7 @@ import java.io.StringWriter;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +38,15 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import com.sheepit.client.Error.ServerCode;
+
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 public class Utils {
 	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, char[] password, Log log) {
@@ -151,6 +154,21 @@ public class Utils {
 		}
 		file.delete();
 	}
+
+	/**
+	 * Will move a directory
+	 */
+	public static void move(File file, String dest) {
+		if (file == null) {
+			return;
+		}
+		File newfile = new File(dest + File.separator + file.getName());
+		try {
+			Files.move(file.toPath(), newfile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+		   System.err.println("Exception while moving file: " + e.getMessage());
+		}
+	 }
 	
 	/**
 	 * Parse a number string to a number.

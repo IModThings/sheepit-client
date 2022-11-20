@@ -103,7 +103,7 @@ public class Worker {
 	
 	@Option(name = SettingsLoader.ARG_PRIORITY, usage = "Set render process priority (19 lowest to -19 highest)", required = false) private int priority = 19;
 	
-	@Option(name = SettingsLoader.ARG_TITLE, usage = "Custom title for the GUI Client", required = false) private String title = "SheepIt Render Farm";
+	@Option(name = SettingsLoader.ARG_TITLE, usage = "Custom title for the GUI Client", required = false) private String title = "SheepIt Render Farm (Modified)";
 	
 	@Option(name = SettingsLoader.ARG_THEME, usage = "Specify the theme to use for the graphical client, default 'light', available 'light', 'dark'", required = false) private String theme = null;
 	

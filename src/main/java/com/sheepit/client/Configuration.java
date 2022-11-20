@@ -50,6 +50,7 @@ import lombok.Data;
 	private File workingDirectory;
 	private File sharedDownloadsDirectory;
 	private File storageDirectory; // for permanent storage (binary archive)
+	private File archiveDirectory;
 	private boolean userHasSpecifiedACacheDir;
 	private String static_exeDirName;
 	private String login;
@@ -94,6 +95,7 @@ import lombok.Data;
 		this.workingDirectory = null;
 		this.sharedDownloadsDirectory = null;
 		this.storageDirectory = null;
+		this.archiveDirectory = null;
 		this.setCacheDir(cache_dir_);
 		this.printLog = false;
 		this.requestTime = null;
@@ -108,7 +110,7 @@ import lombok.Data;
 	}
 	
 	public Configuration(Configuration config) {
-		this(config.configFilePath, config.workingDirectory, config.sharedDownloadsDirectory, config.storageDirectory, config.userHasSpecifiedACacheDir,
+		this(config.configFilePath, config.workingDirectory, config.sharedDownloadsDirectory, config.storageDirectory, config.archiveDirectory, config.userHasSpecifiedACacheDir,
 			config.static_exeDirName, config.login, config.password, config.proxy, config.maxUploadingJob, config.nbCores, config.maxAllowedMemory, config.maxRenderTime,
 			config.priority, config.computeMethod, config.GPUDevice, config.detectGPUs, config.printLog, config.requestTime, config.shutdownTime,
 			config.shutdownMode, config.extras, config.autoSignIn, config.useSysTray, config.headless, config.UIType, config.hostname, config.theme);
@@ -121,6 +123,7 @@ import lombok.Data;
 				c + "workingDirectory:          " + workingDirectory + n +
 				c + "sharedDownloadsDirectory:  " + sharedDownloadsDirectory + n +
 				c + "storageDirectory:          " + storageDirectory + n +
+				c + "archiveDirectory:			" + archiveDirectory + n +
 				c + "userHasSpecifiedACacheDir: " + userHasSpecifiedACacheDir + n +
 				c + "static_exeDirName:         " + static_exeDirName + n +
 				c + "login:                     " + login + n +
@@ -175,7 +178,9 @@ import lombok.Data;
 				// we can also set up a 'permanent' directory for immutable files (like renderer binary)
 				
 				this.storageDirectory = new File(this.workingDirectory.getParent() + File.separator + "sheepit_binary_cache");
+				this.archiveDirectory = new File(System.getProperty("user.dir") + File.separator + "sheepit_render_archive");
 				this.storageDirectory.mkdir();
+				this.archiveDirectory.mkdir();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -185,8 +190,10 @@ import lombok.Data;
 			this.userHasSpecifiedACacheDir = true;
 			this.workingDirectory = new File(cache_dir_.getAbsolutePath() + File.separator + "sheepit");
 			this.storageDirectory = new File(cache_dir_.getAbsolutePath() + File.separator + "sheepit_binary_cache");
+			this.archiveDirectory = new File(cache_dir_.getAbsolutePath() + File.separator + "sheepit_render_archive");
 			this.workingDirectory.mkdirs();
 			this.storageDirectory.mkdirs();
+			this.archiveDirectory.mkdirs();
 		}
 		
 		if (this.sharedDownloadsDirectory != null) {
@@ -214,6 +221,10 @@ import lombok.Data;
 		else {
 			return this.storageDirectory;
 		}
+	}
+
+	public File getArchiveDir() {
+		return this.archiveDirectory;
 	}
 	
 	public File getCacheDirForSettings() {

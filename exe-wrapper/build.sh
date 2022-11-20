@@ -11,7 +11,9 @@ JVM_NAME="jdk-11.0.13+8-jre"
 mkdir -p build/jre
 
 # Downloading client to the target directory
-wget https://www.sheepit-renderfarm.com/media/applet/client-latest.php -O ./build/jre/sheepit-client.jar
+#wget https://www.sheepit-renderfarm.com/media/applet/client-latest.php -O ./build/jre/sheepit-client.jar
+#get the new file
+cp ../build/libs/sheepit-client-all.jar ./build/jre/sheepit-client.jar
 
 # Unzipping jre
 unzip "$JVM_NAME".zip -d ./build/jre/  # Unzip JRE to be packaged

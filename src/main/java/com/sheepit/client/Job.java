@@ -537,7 +537,8 @@ import java.util.regex.Pattern;
 		File scene_dir = new File(getSceneDirectory());
 		long date_modification_scene_directory = (long) Utils.lastModificationTime(scene_dir);
 		if (date_modification_scene_directory > process.getStartTime()) {
-			scene_dir.delete();
+			// scene_dir.delete();
+			Utils.move(scene_dir, configuration.getArchiveDir().getPath());
 		}
 		
 		gui.status(String.format("Frame finished in %dmin%ds, render time: %dmin%ds",
