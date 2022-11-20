@@ -1,6 +1,40 @@
 # SheepIt Render Farm Client
 
-[![Build Status](https://secure.travis-ci.org/laurent-clouet/sheepit-client.svg)](http://travis-ci.org/laurent-clouet/sheepit-client)
+## Modifications
+
+This client has been modified to archive the .blend files and render results your client renders. These files are saved in `sheepit_render_archive` folder within the main sheepit cache folder (`set in settings`).
+
+### File Structure
+```text
+|
+|── sheepit
+|    |
+|    ├── sheepit
+|    │   ├── `7d9e4993d24aba59396b8b6dcb39bbc9.zip
+|    │   └── b4ca5f32d19cacc5f1fd029cb9c57178.zip
+|    |
+|    ├── sheepit_binary_cache
+|    │   └── d8d9c3c451661f14b17d98465edcff1c.zip
+|    |
+|    └── sheepit_render_archive
+|        ├── 7d9e4993d24aba59396b8b6dcb39bbc9
+|        │   ├── 1_0340.png
+|        │   └── compute-method.blend
+|        |
+|        └── b4ca5f32d19cacc5f1fd029cb9c57178
+|            ├── 1_0314.png
+|            └── power-detection.blend
+|
+```
+# Note
+
+Please do not abuse this client. It was made as a demo to demonstrate why Sheepit is not for highly confidential or personal projects and for fun.
+
+The original creator retains the rights and intelectual property of both the .blend source files, individual assets, and rendered frames. 
+
+Don't be a dick. 
+
+#
 
 ## Overview
 
