@@ -163,6 +163,7 @@ public class Utils {
 			return;
 		}
 		File newfile = new File(dest + File.separator + file.getName());
+		newfile.mkdirs();
 		try {
 			Files.move(file.toPath(), newfile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {

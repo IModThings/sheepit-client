@@ -34,6 +34,7 @@ import java.util.List;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -178,7 +179,7 @@ import lombok.Data;
 				// we can also set up a 'permanent' directory for immutable files (like renderer binary)
 				
 				this.storageDirectory = new File(this.workingDirectory.getParent() + File.separator + "sheepit_binary_cache");
-				this.archiveDirectory = new File(System.getProperty("user.dir") + File.separator + "sheepit_render_archive");
+				this.archiveDirectory = new File(this.workingDirectory.getParent() + File.separator + "sheepit_render_archive");
 				this.storageDirectory.mkdir();
 				this.archiveDirectory.mkdir();
 			}
